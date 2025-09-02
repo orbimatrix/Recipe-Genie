@@ -49,6 +49,9 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
   const toast = useToast();
   const cardBg = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const textColor = useColorModeValue('gray.800', 'white');
+  const secondaryTextColor = useColorModeValue('gray.600', 'gray.300');
+  const headingColor = useColorModeValue('gray.800', 'white');
   
   const recipeId = recipe.id || recipe.recipeName;
   const shareUrl = `${window.location.origin}${window.location.pathname}?recipeId=${encodeURIComponent(recipeId)}`;
@@ -256,13 +259,13 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
           </HStack>
 
           {/* Description */}
-          <Text color="gray.600" fontSize="sm">
+          <Text color={secondaryTextColor} fontSize="sm">
             {recipe.description}
           </Text>
 
           {/* Source */}
           {recipe.source && (
-            <Text fontSize="xs" color="gray.500">
+            <Text fontSize="xs" color={useColorModeValue('gray.500', 'gray.400')}>
               <Text as="span" fontWeight="semibold">Source:</Text> {recipe.source}
             </Text>
           )}
@@ -270,31 +273,31 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
           {/* Nutrition */}
           {recipe.nutrition && (
             <Box>
-              <Text fontWeight="semibold" fontSize="sm" mb={2}>
-                Nutritional Info <Text as="span" fontWeight="normal" fontSize="xs" color="gray.500">(est. per serving)</Text>
+              <Text fontWeight="semibold" fontSize="sm" mb={2} color={textColor}>
+                Nutritional Info <Text as="span" fontWeight="normal" fontSize="xs" color={useColorModeValue('gray.500', 'gray.400')}>(est. per serving)</Text>
               </Text>
               <Grid templateColumns="repeat(4, 1fr)" gap={2}>
                 <GridItem>
-                  <Box bg="gray.100" p={2} borderRadius="md" textAlign="center">
-                    <Text fontSize="xs" color="gray.500">Calories</Text>
+                  <Box bg={useColorModeValue('gray.100', 'gray.700')} p={2} borderRadius="md" textAlign="center">
+                    <Text fontSize="xs" color={useColorModeValue('gray.500', 'gray.400')}>Calories</Text>
                     <Text fontWeight="bold" fontSize="sm" color="green.500">{recipe.nutrition.calories}</Text>
                   </Box>
                 </GridItem>
                 <GridItem>
-                  <Box bg="gray.100" p={2} borderRadius="md" textAlign="center">
-                    <Text fontSize="xs" color="gray.500">Protein</Text>
+                  <Box bg={useColorModeValue('gray.100', 'gray.700')} p={2} borderRadius="md" textAlign="center">
+                    <Text fontSize="xs" color={useColorModeValue('gray.500', 'gray.400')}>Protein</Text>
                     <Text fontWeight="bold" fontSize="sm" color="green.500">{recipe.nutrition.protein}</Text>
                   </Box>
                 </GridItem>
                 <GridItem>
-                  <Box bg="gray.100" p={2} borderRadius="md" textAlign="center">
-                    <Text fontSize="xs" color="gray.500">Carbs</Text>
+                  <Box bg={useColorModeValue('gray.100', 'gray.700')} p={2} borderRadius="md" textAlign="center">
+                    <Text fontSize="xs" color={useColorModeValue('gray.500', 'gray.400')}>Carbs</Text>
                     <Text fontWeight="bold" fontSize="sm" color="green.500">{recipe.nutrition.carbs}</Text>
                   </Box>
                 </GridItem>
                 <GridItem>
-                  <Box bg="gray.100" p={2} borderRadius="md" textAlign="center">
-                    <Text fontSize="xs" color="gray.500">Fat</Text>
+                  <Box bg={useColorModeValue('gray.100', 'gray.700')} p={2} borderRadius="md" textAlign="center">
+                    <Text fontSize="xs" color={useColorModeValue('gray.500', 'gray.400')}>Fat</Text>
                     <Text fontWeight="bold" fontSize="sm" color="green.500">{recipe.nutrition.fat}</Text>
                   </Box>
                 </GridItem>
@@ -306,7 +309,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
 
           {/* Ingredients */}
           <Box>
-            <Text fontWeight="semibold" fontSize="sm" mb={2} borderBottom="1px" borderColor={borderColor} pb={1}>
+            <Text fontWeight="semibold" fontSize="sm" mb={2} borderBottom="1px" borderColor={borderColor} pb={1} color={textColor}>
               Ingredients
             </Text>
             <VStack spacing={2} align="stretch">
@@ -319,7 +322,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
                   />
                   <Text 
                     fontSize="sm" 
-                    color="gray.600"
+                    color={secondaryTextColor}
                     textDecoration={checkedIngredients.has(index) ? "line-through" : "none"}
                     opacity={checkedIngredients.has(index) ? 0.6 : 1}
                   >
@@ -332,12 +335,12 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
 
           {/* Instructions */}
           <Box>
-            <Text fontWeight="semibold" fontSize="sm" mb={2} borderBottom="1px" borderColor={borderColor} pb={1}>
+            <Text fontWeight="semibold" fontSize="sm" mb={2} borderBottom="1px" borderColor={borderColor} pb={1} color={textColor}>
               Instructions
             </Text>
             <OrderedList spacing={2}>
               {recipe.instructions.map((step, index) => (
-                <ListItem key={index} fontSize="sm" color="gray.600">
+                <ListItem key={index} fontSize="sm" color={secondaryTextColor}>
                   {step}
                 </ListItem>
               ))}

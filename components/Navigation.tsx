@@ -73,11 +73,11 @@ const Navigation: React.FC = () => {
                 rounded="md"
                 textDecoration="none"
                 fontWeight="medium"
-                color={isActive(item.path) ? 'green.500' : 'gray.600'}
-                bg={isActive(item.path) ? 'green.50' : 'transparent'}
+                color={isActive(item.path) ? 'white' : useColorModeValue('gray.600', 'gray.300')}
+                bg={isActive(item.path) ? 'green.500' : 'transparent'}
                 _hover={{
-                  color: 'green.500',
-                  bg: 'green.50',
+                  color: 'white',
+                  bg: 'green.500',
                 }}
                 transition="all 0.2s"
               >
@@ -92,7 +92,7 @@ const Navigation: React.FC = () => {
               icon={colorMode === 'light' ? <FaMoon /> : <FaSun />}
               onClick={toggleColorMode}
               variant="ghost"
-              color="gray.600"
+              color={useColorModeValue('gray.600', 'gray.300')}
               _hover={{ color: 'green.500' }}
             />
           </HStack>
@@ -140,11 +140,11 @@ const Navigation: React.FC = () => {
                   rounded="md"
                   textDecoration="none"
                   fontWeight="medium"
-                  color={isActive(item.path) ? 'green.500' : 'gray.600'}
-                  bg={isActive(item.path) ? 'green.50' : 'transparent'}
+                  color={isActive(item.path) ? 'white' : useColorModeValue('gray.600', 'gray.300')}
+                  bg={isActive(item.path) ? 'green.500' : 'transparent'}
                   _hover={{
-                    color: 'green.500',
-                    bg: 'green.50',
+                    color: 'white',
+                    bg: 'green.500',
                   }}
                   transition="all 0.2s"
                 >
@@ -161,8 +161,8 @@ const Navigation: React.FC = () => {
                 justifyContent="flex-start"
                 px={4}
                 py={3}
-                color="gray.600"
-                _hover={{ color: 'green.500', bg: 'green.50' }}
+                color={useColorModeValue('gray.600', 'gray.300')}
+                _hover={{ color: 'green.500', bg: useColorModeValue('green.50', 'green.500') }}
               >
                 {colorMode === 'light' ? 'Dark Mode' : 'Light Mode'}
               </Button>

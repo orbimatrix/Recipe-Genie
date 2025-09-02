@@ -42,8 +42,87 @@ const theme = extendTheme({
   },
   components: {
     Button: {
-      defaultProps: {
-        colorScheme: 'green',
+      baseStyle: (props: any) => ({
+        fontWeight: 'semibold',
+        borderRadius: 'md',
+      }),
+      variants: {
+        solid: (props: any) => {
+          const { colorScheme = 'green' } = props;
+          return {
+            bg: colorScheme === 'green' 
+              ? (props.colorMode === 'dark' ? 'green.500' : 'green.500')
+              : colorScheme === 'red'
+              ? (props.colorMode === 'dark' ? 'red.500' : 'red.500')
+              : (props.colorMode === 'dark' ? 'gray.600' : 'gray.600'),
+            color: 'white',
+            _hover: {
+              bg: colorScheme === 'green'
+                ? (props.colorMode === 'dark' ? 'green.600' : 'green.600')
+                : colorScheme === 'red'
+                ? (props.colorMode === 'dark' ? 'red.600' : 'red.600')
+                : (props.colorMode === 'dark' ? 'gray.700' : 'gray.700'),
+            },
+            _active: {
+              bg: colorScheme === 'green'
+                ? (props.colorMode === 'dark' ? 'green.700' : 'green.700')
+                : colorScheme === 'red'
+                ? (props.colorMode === 'dark' ? 'red.700' : 'red.700')
+                : (props.colorMode === 'dark' ? 'gray.800' : 'gray.800'),
+            },
+          };
+        },
+        outline: (props: any) => {
+          const { colorScheme = 'green' } = props;
+          return {
+            borderColor: colorScheme === 'green' 
+              ? (props.colorMode === 'dark' ? 'green.500' : 'green.500')
+              : colorScheme === 'red'
+              ? (props.colorMode === 'dark' ? 'red.500' : 'red.500')
+              : (props.colorMode === 'dark' ? 'gray.500' : 'gray.500'),
+            color: colorScheme === 'green'
+              ? (props.colorMode === 'dark' ? 'green.400' : 'green.600')
+              : colorScheme === 'red'
+              ? (props.colorMode === 'dark' ? 'red.400' : 'red.600')
+              : (props.colorMode === 'dark' ? 'gray.300' : 'gray.600'),
+            _hover: {
+              bg: colorScheme === 'green'
+                ? (props.colorMode === 'dark' ? 'green.500' : 'green.50')
+                : colorScheme === 'red'
+                ? (props.colorMode === 'dark' ? 'red.500' : 'red.50')
+                : (props.colorMode === 'dark' ? 'gray.600' : 'gray.50'),
+              color: 'white',
+            },
+          };
+        },
+      },
+    },
+    IconButton: {
+      baseStyle: (props: any) => ({
+        borderRadius: 'md',
+      }),
+      variants: {
+        ghost: (props: any) => ({
+          color: props.colorMode === 'dark' ? 'gray.300' : 'gray.600',
+          _hover: {
+            bg: props.colorMode === 'dark' ? 'gray.700' : 'gray.100',
+            color: props.colorMode === 'dark' ? 'white' : 'gray.800',
+          },
+        }),
+        solid: (props: any) => {
+          const { colorScheme = 'green' } = props;
+          return {
+            bg: colorScheme === 'green' 
+              ? (props.colorMode === 'dark' ? 'green.500' : 'green.500')
+              : (props.colorMode === 'dark' ? 'gray.600' : 'gray.600'),
+            color: 'white',
+            _hover: {
+              bg: colorScheme === 'green'
+                ? (props.colorMode === 'dark' ? 'green.600' : 'green.600')
+                : (props.colorMode === 'dark' ? 'gray.700' : 'gray.700'),
+            },
+          };
+        },
       },
     },
     Card: {
