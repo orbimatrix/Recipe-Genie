@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { Recipe } from '../types';
 import { StarIcon } from './icons/StarIcon';
 import { ShareIcon } from './icons/ShareIcon';
 import { CheckIcon } from './icons/CheckIcon';
+import { TwitterIcon } from './icons/TwitterIcon';
+import { FacebookIcon } from './icons/FacebookIcon';
+import { LinkIcon } from './icons/LinkIcon';
+
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -17,8 +21,23 @@ interface RecipeCardProps {
 export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove, isSaved, isGeneratedInSession, onToggleFavorite, isFavorite }) => {
   const [checkedIngredients, setCheckedIngredients] = useState<Set<number>>(new Set());
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
   const [isRecipeTextCopied, setIsRecipeTextCopied] = useState(false);
+  const [showShareOptions, setShowShareOptions] = useState(false);
+  const [isLinkCopied, setIsLinkCopied] = useState(false);
+  const shareMenuRef = useRef<HTMLDivElement>(null);
+
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+        setShowShareOptions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleIngredientCheck = (index: number) => {
     setCheckedIngredients(prevChecked => {
@@ -43,20 +62,36 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
   };
 
   const handleShare = async () => {
-    if (navigator.clipboard) {
-        const shareText = `Check out this recipe: ${recipe.recipeName}\n\n${recipe.description}`;
-        try {
-            await navigator.clipboard.writeText(shareText);
-            setIsCopied(true);
-            setTimeout(() => {
-                setIsCopied(false);
-            }, 2000); // Show confirmation for 2 seconds
-        } catch (err) {
-            console.error('Failed to copy recipe:', err);
-            alert('Failed to copy recipe.');
-        }
+    const shareText = `Check out this recipe for ${recipe.recipeName}!\n\n${recipe.description}`;
+    const url = window.location.href;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: recipe.recipeName,
+          text: shareText,
+          url: url,
+        });
+      } catch (err) {
+        console.error('Failed to share:', err);
+      }
     } else {
-        alert('Clipboard functionality is not available in your browser.');
+      setShowShareOptions(prev => !prev);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        setIsLinkCopied(true);
+        setTimeout(() => {
+          setIsLinkCopied(false);
+          setShowShareOptions(false);
+        }, 1500);
+      } catch (err) {
+        console.error('Failed to copy link:', err);
+      }
     }
   };
 
@@ -131,6 +166,11 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
   const saveButtonClass = getDynamicButtonClasses();
 
   const cardClasses = `bg-white dark:bg-slate-800 rounded-xl shadow-lg flex flex-col overflow-hidden transform hover:scale-105 transition-transform duration-300 ease-in-out ${isGeneratedInSession ? 'ring-2 ring-cyan-500' : 'ring-1 ring-slate-900/5'}`;
+  
+  const shareText = `Check out this recipe for ${recipe.recipeName}!`;
+  const shareUrl = window.location.href;
+  const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+  const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
 
   return (
     <div className={cardClasses}>
@@ -138,19 +178,37 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
         <div className="flex justify-between items-start mb-2 gap-2">
             <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 pr-2 flex-1">{recipe.recipeName}</h3>
             <div className="flex items-center gap-2">
-                <button
-                    onClick={handleShare}
-                    className="p-1 rounded-full transition-colors duration-200 text-slate-400 hover:text-emerald-500"
-                    aria-label={isCopied ? 'Copied to clipboard' : 'Share recipe'}
-                    title={isCopied ? 'Copied!' : 'Share recipe'}
-                    disabled={isCopied}
-                >
-                    {isCopied ? (
-                        <CheckIcon className="w-6 h-6 text-emerald-500" />
-                    ) : (
-                        <ShareIcon className="w-6 h-6" />
-                    )}
-                </button>
+                <div className="relative">
+                  <button
+                      onClick={handleShare}
+                      className="p-1 rounded-full transition-colors duration-200 text-slate-400 hover:text-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+                      aria-label='Share recipe'
+                      title='Share recipe'
+                  >
+                    <ShareIcon className="w-6 h-6" />
+                  </button>
+                  {showShareOptions && (
+                    <div
+                      ref={shareMenuRef}
+                      className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-700 rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 z-10 origin-top-right animate-fade-in-down"
+                    >
+                      <div className="py-1">
+                        <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600">
+                          <TwitterIcon className="w-5 h-5" />
+                          <span>Share on Twitter</span>
+                        </a>
+                        <a href={facebookUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600">
+                          <FacebookIcon className="w-5 h-5" />
+                          <span>Share on Facebook</span>
+                        </a>
+                        <button onClick={handleCopyLink} className="w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600">
+                          {isLinkCopied ? <CheckIcon className="w-5 h-5 text-emerald-500" /> : <LinkIcon className="w-5 h-5" />}
+                          <span>{isLinkCopied ? 'Copied!' : 'Copy Link'}</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 {onToggleFavorite && (
                     <button
                     onClick={() => onToggleFavorite(recipe)}
