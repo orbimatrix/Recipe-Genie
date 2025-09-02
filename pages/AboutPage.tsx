@@ -143,24 +143,49 @@ const AboutPage: React.FC = () => {
         </Card>
 
         {/* Team Section */}
-        <Box mb={16}>
-          <Heading size="lg" textAlign="center" mb={12} color={headingColor}>Meet Our Team</Heading>
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={8}>
+        <Box mb={16} display="flex" justifyContent="center">
+          <Box maxW="400px" w="full">
+            <Heading size="lg" textAlign="center" mb={12} color={headingColor}>Meet Our Team</Heading>
             {teamMembers.map((member, index) => (
-              <Card key={index} bg={cardBg} shadow="md" h="full">
-                <CardBody textAlign="center">
-                  <VStack spacing={4}>
-                    <Avatar size="xl" src={member.avatar} name={member.name} />
-                    <VStack spacing={2}>
-                      <Heading size="md" color={headingColor}>{member.name}</Heading>
-                      <Text color="green.500" fontWeight="semibold">{member.role}</Text>
-                      <Text color={secondaryTextColor} fontSize="sm">{member.description}</Text>
+              <Card key={index} bg={cardBg} shadow="lg" h="full" borderRadius="2xl" overflow="hidden">
+                <CardBody textAlign="center" p={8}>
+                  <VStack spacing={6}>
+                    <Box position="relative">
+                      <Avatar 
+                        size="2xl" 
+                        src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                        name={`👨‍💻 ${member.name}`}
+                        border="4px solid"
+                        borderColor="white"
+                        boxShadow="0 0 30px rgba(72, 187, 120, 0.6), 0 0 60px rgba(72, 187, 120, 0.3)"
+                        filter="saturate(1.2) contrast(1.1)"
+                      />
+                      <Box
+                        position="absolute"
+                        top="-2"
+                        right="-2"
+                        bg="green.500"
+                        color="white"
+                        borderRadius="full"
+                        p={1}
+                        fontSize="xs"
+                        fontWeight="bold"
+                        minW="24px"
+                        textAlign="center"
+                      >
+                        NFT
+                      </Box>
+                    </Box>
+                    <VStack spacing={3}>
+                      <Heading size="lg" color={headingColor}>{member.name}</Heading>
+                      <Text color="green.500" fontWeight="bold" fontSize="lg">{member.role}</Text>
+                      <Text color={secondaryTextColor} fontSize="md" lineHeight="1.6">{member.description}</Text>
                     </VStack>
                   </VStack>
                 </CardBody>
               </Card>
             ))}
-          </SimpleGrid>
+          </Box>
         </Box>
 
         {/* Mission Statement */}
