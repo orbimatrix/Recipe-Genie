@@ -18,20 +18,39 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [savedRecipesSearchTerm, setSavedRecipesSearchTerm] = useState<string>('');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [initialRecipe, setInitialRecipe] = useState<Recipe | null>(null);
 
 
   useEffect(() => {
     try {
       const storedRecipes = localStorage.getItem('savedRecipes');
-      if (storedRecipes) {
-        setSavedRecipes(JSON.parse(storedRecipes));
-      }
       const storedFavorites = localStorage.getItem('favoriteRecipes');
-      if (storedFavorites) {
-        setFavoriteRecipes(JSON.parse(storedFavorites));
+      
+      const saved = storedRecipes ? JSON.parse(storedRecipes) : [];
+      const favorites = storedFavorites ? JSON.parse(storedFavorites) : [];
+
+      setSavedRecipes(saved);
+      setFavoriteRecipes(favorites);
+      
+      // One-time check for a shared recipe from the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const recipeIdFromUrl = urlParams.get('recipeId');
+
+      if (recipeIdFromUrl) {
+          const allRecipesFromStorage = [...saved, ...favorites];
+          const foundRecipe = allRecipesFromStorage.find(r => (r.id || r.recipeName) === recipeIdFromUrl);
+
+          if (foundRecipe) {
+              setInitialRecipe(foundRecipe);
+          } else {
+              setError(`The linked recipe "${decodeURIComponent(recipeIdFromUrl)}" was not found in your saved recipes. It might be a temporary recipe that wasn't saved.`);
+          }
+
+          // Clean the URL to avoid re-triggering on refresh
+          window.history.replaceState({}, document.title, window.location.pathname);
       }
     } catch (error) {
-      console.error("Failed to parse recipes from localStorage", error);
+      console.error("Failed to parse recipes from localStorage or process URL", error);
       setSavedRecipes([]);
       setFavoriteRecipes([]);
     }
@@ -45,6 +64,7 @@ const App: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setRecipes([]);
+    setInitialRecipe(null); // Clear initial recipe when generating new ones
 
     try {
       const result = await generateRecipes(ingredients, prioritizeIngredients, excludeIngredients);
@@ -225,38 +245,66 @@ const App: React.FC = () => {
           
           <div className="mt-10">
             {error && (
-              <div className="bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-center" role="alert">
+              <div className="bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-center mb-8" role="alert">
                 <div className="flex flex-col items-center justify-center gap-3">
                     <strong className="font-bold">An Error Occurred</strong>
                     <span>{error}</span>
-                    <button
-                        onClick={handleGenerateRecipes}
-                        className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all duration-200"
-                    >
-                        Retry
-                    </button>
+                    {error.includes("Failed to generate recipes") && (
+                       <button
+                          onClick={handleGenerateRecipes}
+                          className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all duration-200"
+                      >
+                          Retry
+                      </button>
+                    )}
                 </div>
               </div>
             )}
 
-            {!isLoading && recipes.length === 0 && !error && (
+            {initialRecipe && (
+                <div className="mb-12">
+                    <h2 className="text-2xl font-bold text-slate-700 dark:text-slate-300 mb-6 pb-2 border-b border-slate-300 dark:border-slate-600">
+                        From a Shared Link
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <RecipeCard 
+                            key={initialRecipe.id || initialRecipe.recipeName}
+                            recipe={initialRecipe} 
+                            onSave={!isRecipeSaved(initialRecipe) ? saveRecipe : undefined}
+                            onRemove={isRecipeSaved(initialRecipe) ? removeRecipe : undefined}
+                            isSaved={isRecipeSaved(initialRecipe)} 
+                            onToggleFavorite={toggleFavoriteRecipe}
+                            isFavorite={isRecipeFavorite(initialRecipe)}
+                        />
+                    </div>
+                </div>
+            )}
+
+            {!isLoading && recipes.length === 0 && !error && !initialRecipe && (
                <div className="text-center py-10">
                   <p className="text-slate-500 dark:text-slate-400">Your delicious recipes will appear here.</p>
                </div>
             )}
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {recipes.map((recipe, index) => (
-                <RecipeCard 
-                  key={index} 
-                  recipe={recipe} 
-                  onSave={saveRecipe} 
-                  isSaved={isRecipeSaved(recipe)} 
-                  onToggleFavorite={toggleFavoriteRecipe}
-                  isFavorite={isRecipeFavorite(recipe)}
-                />
-              ))}
-            </div>
+            {recipes.length > 0 && (
+                <>
+                    <h2 className="text-2xl font-bold text-slate-700 dark:text-slate-300 mb-6 pb-2 border-b border-slate-300 dark:border-slate-600">
+                        Generated Recipes
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {recipes.map((recipe, index) => (
+                        <RecipeCard 
+                        key={index} 
+                        recipe={recipe} 
+                        onSave={saveRecipe} 
+                        isSaved={isRecipeSaved(recipe)} 
+                        onToggleFavorite={toggleFavoriteRecipe}
+                        isFavorite={isRecipeFavorite(recipe)}
+                        />
+                    ))}
+                    </div>
+                </>
+            )}
           </div>
 
           {savedRecipes.length > 0 && (

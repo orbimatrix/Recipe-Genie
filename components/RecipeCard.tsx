@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import type { Recipe } from '../types';
 import { StarIcon } from './icons/StarIcon';
@@ -25,6 +26,9 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
   const shareMenuRef = useRef<HTMLDivElement>(null);
+  
+  const recipeId = recipe.id || recipe.recipeName;
+  const shareUrl = `${window.location.origin}${window.location.pathname}?recipeId=${encodeURIComponent(recipeId)}`;
 
 
   useEffect(() => {
@@ -63,17 +67,17 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
 
   const handleShare = async () => {
     const shareText = `Check out this recipe for ${recipe.recipeName}!\n\n${recipe.description}`;
-    const url = window.location.href;
 
     if (navigator.share) {
       try {
         await navigator.share({
           title: recipe.recipeName,
           text: shareText,
-          url: url,
+          url: shareUrl,
         });
       } catch (err) {
         console.error('Failed to share:', err);
+        setShowShareOptions(prev => !prev);
       }
     } else {
       setShowShareOptions(prev => !prev);
@@ -83,7 +87,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
   const handleCopyLink = async () => {
     if (navigator.clipboard) {
       try {
-        await navigator.clipboard.writeText(window.location.href);
+        await navigator.clipboard.writeText(shareUrl);
         setIsLinkCopied(true);
         setTimeout(() => {
           setIsLinkCopied(false);
@@ -168,69 +172,71 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
   const cardClasses = `bg-white dark:bg-slate-800 rounded-xl shadow-lg flex flex-col overflow-hidden transform hover:scale-105 transition-transform duration-300 ease-in-out ${isGeneratedInSession ? 'ring-2 ring-cyan-500' : 'ring-1 ring-slate-900/5'}`;
   
   const shareText = `Check out this recipe for ${recipe.recipeName}!`;
-  const shareUrl = window.location.href;
   const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
   const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
 
   return (
     <div className={cardClasses}>
       <div className="p-6 flex-grow">
-        <div className="flex justify-between items-start mb-2 gap-2">
-            <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 pr-2 flex-1">{recipe.recipeName}</h3>
-            <div className="flex items-center gap-2">
-                <div className="relative">
-                  <button
-                      onClick={handleShare}
-                      className="p-1 rounded-full transition-colors duration-200 text-slate-400 hover:text-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
-                      aria-label='Share recipe'
-                      title='Share recipe'
-                  >
-                    <ShareIcon className="w-6 h-6" />
-                  </button>
-                  {showShareOptions && (
-                    <div
-                      ref={shareMenuRef}
-                      className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-700 rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 z-10 origin-top-right animate-fade-in-down"
-                    >
-                      <div className="py-1">
-                        <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600">
-                          <TwitterIcon className="w-5 h-5" />
-                          <span>Share on Twitter</span>
-                        </a>
-                        <a href={facebookUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600">
-                          <FacebookIcon className="w-5 h-5" />
-                          <span>Share on Facebook</span>
-                        </a>
-                        <button onClick={handleCopyLink} className="w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600">
-                          {isLinkCopied ? <CheckIcon className="w-5 h-5 text-emerald-500" /> : <LinkIcon className="w-5 h-5" />}
-                          <span>{isLinkCopied ? 'Copied!' : 'Copy Link'}</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
+        <div className="flex justify-between items-start mb-4 gap-4">
+          <div className="flex-1">
+            <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">{recipe.recipeName}</h3>
+            {recipe.difficulty && (
+                <div>
+                    {getDifficultyBadge(recipe.difficulty)}
                 </div>
-                {onToggleFavorite && (
-                    <button
-                    onClick={() => onToggleFavorite(recipe)}
-                    className={`p-1 rounded-full transition-all duration-200 transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 ${
-                        isFavorite
-                        ? 'text-yellow-400'
-                        : 'text-slate-400 hover:text-yellow-400'
-                    }`}
-                    aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                    title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                    >
-                    <StarIcon className={`w-6 h-6 transition-transform ${isFavorite ? 'fill-current' : 'fill-none'}`} />
-                    </button>
+            )}
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="relative">
+                <button
+                    onClick={handleShare}
+                    className="p-1 rounded-full transition-colors duration-200 text-slate-400 hover:text-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+                    aria-label='Share recipe'
+                    title='Share recipe'
+                >
+                  <ShareIcon className="w-6 h-6" />
+                </button>
+                {showShareOptions && (
+                  <div
+                    ref={shareMenuRef}
+                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-700 rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 z-10 origin-top-right animate-fade-in-down"
+                  >
+                    <div className="py-1">
+                      <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600">
+                        <TwitterIcon className="w-5 h-5" />
+                        <span>Share on Twitter</span>
+                      </a>
+                      <a href={facebookUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600">
+                        <FacebookIcon className="w-5 h-5" />
+                        <span>Share on Facebook</span>
+                      </a>
+                      <button onClick={handleCopyLink} className="w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600">
+                        {isLinkCopied ? <CheckIcon className="w-5 h-5 text-emerald-500" /> : <LinkIcon className="w-5 h-5" />}
+                        <span>{isLinkCopied ? 'Copied!' : 'Copy Link'}</span>
+                      </button>
+                    </div>
+                  </div>
                 )}
-            </div>
+              </div>
+              {onToggleFavorite && (
+                  <button
+                  onClick={() => onToggleFavorite(recipe)}
+                  className={`p-1 rounded-full transition-all duration-200 transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 ${
+                      isFavorite
+                      ? 'text-yellow-400'
+                      : 'text-slate-400 hover:text-yellow-400'
+                  }`}
+                  aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                  title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                  >
+                  <StarIcon className={`w-6 h-6 transition-transform ${isFavorite ? 'fill-current' : 'fill-none'}`} />
+                  </button>
+              )}
+          </div>
         </div>
-        {recipe.difficulty && (
-            <div className="mb-4">
-                {getDifficultyBadge(recipe.difficulty)}
-            </div>
-        )}
-        <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">{recipe.description}</p>
+        
+        <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm leading-relaxed">{recipe.description}</p>
         
         {recipe.source && (
             <div className="mb-4">
