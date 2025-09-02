@@ -18,6 +18,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
   const [checkedIngredients, setCheckedIngredients] = useState<Set<number>>(new Set());
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [isRecipeTextCopied, setIsRecipeTextCopied] = useState(false);
 
   const handleIngredientCheck = (index: number) => {
     setCheckedIngredients(prevChecked => {
@@ -49,6 +50,31 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
             setIsCopied(true);
             setTimeout(() => {
                 setIsCopied(false);
+            }, 2000); // Show confirmation for 2 seconds
+        } catch (err) {
+            console.error('Failed to copy recipe:', err);
+            alert('Failed to copy recipe.');
+        }
+    } else {
+        alert('Clipboard functionality is not available in your browser.');
+    }
+  };
+
+  const handleCopyRecipe = async () => {
+    const ingredientsText = recipe.ingredients.map(ing => `- ${ing}`).join('\n');
+    const instructionsText = recipe.instructions.map((step, i) => `${i + 1}. ${step}`).join('\n');
+    
+    const fullRecipeText = `Recipe: ${recipe.recipeName}\n\n` +
+                      `${recipe.description}\n\n` +
+                      `Ingredients:\n${ingredientsText}\n\n` +
+                      `Instructions:\n${instructionsText}`;
+
+    if (navigator.clipboard) {
+        try {
+            await navigator.clipboard.writeText(fullRecipeText);
+            setIsRecipeTextCopied(true);
+            setTimeout(() => {
+                setIsRecipeTextCopied(false);
             }, 2000); // Show confirmation for 2 seconds
         } catch (err) {
             console.error('Failed to copy recipe:', err);
@@ -150,23 +176,43 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
       </div>
 
       <div className="p-6 pt-0 mt-auto">
-        {onSave && (
+        <div className="space-y-2">
+          {onSave && (
+            <button
+              onClick={handleSave}
+              disabled={isSaved || showConfirmation}
+              className={saveButtonClass}
+            >
+              {buttonText}
+            </button>
+          )}
+          {onRemove && (
+            <button
+              onClick={() => onRemove(recipe)}
+              className="w-full px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all duration-200"
+            >
+              Remove
+            </button>
+          )}
           <button
-            onClick={handleSave}
-            disabled={isSaved || showConfirmation}
-            className={saveButtonClass}
+              onClick={handleCopyRecipe}
+              disabled={isRecipeTextCopied}
+              className={`w-full px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2 ${
+                  isRecipeTextCopied
+                  ? 'bg-emerald-500 text-white cursor-not-allowed'
+                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+              }`}
           >
-            {buttonText}
+              {isRecipeTextCopied ? (
+                  <>
+                      <CheckIcon className="w-5 h-5" />
+                      <span>Copied!</span>
+                  </>
+              ) : (
+                  <span>Copy Recipe</span>
+              )}
           </button>
-        )}
-        {onRemove && (
-          <button
-            onClick={() => onRemove(recipe)}
-            className="w-full px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all duration-200"
-          >
-            Remove
-          </button>
-        )}
+        </div>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { generateRecipes } from './services/geminiService';
 import { RecipeCard } from './components/RecipeCard';
 import { ChefHatIcon } from './components/icons/ChefHatIcon';
 import { LoadingSpinner } from './components/icons/LoadingSpinner';
+import { SearchIcon } from './components/icons/SearchIcon';
 
 const App: React.FC = () => {
   const [ingredients, setIngredients] = useState<string>('');
@@ -263,13 +264,19 @@ const App: React.FC = () => {
                       <option value="newest">Newest First</option>
                       <option value="oldest">Oldest First</option>
                     </select>
-                    <input
-                      type="text"
-                      placeholder="Search saved recipes..."
-                      value={savedRecipesSearchTerm}
-                      onChange={(e) => setSavedRecipesSearchTerm(e.target.value)}
-                      className="flex-grow sm:flex-grow-0 sm:w-48 p-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition duration-200"
-                    />
+                    <div className="relative flex-grow sm:flex-grow-0 sm:w-48">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <SearchIcon className="w-5 h-5 text-slate-400" />
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Search saved recipes..."
+                        value={savedRecipesSearchTerm}
+                        onChange={(e) => setSavedRecipesSearchTerm(e.target.value)}
+                        className="w-full p-2 pl-10 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition duration-200"
+                        aria-label="Search saved recipes"
+                      />
+                    </div>
                     <button
                       onClick={clearAllSavedRecipes}
                       className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all duration-200"
