@@ -64,8 +64,19 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
     const ingredientsText = recipe.ingredients.map(ing => `- ${ing}`).join('\n');
     const instructionsText = recipe.instructions.map((step, i) => `${i + 1}. ${step}`).join('\n');
     
+    let nutritionText = '';
+    if (recipe.nutrition) {
+      nutritionText = `\nNutritional Info (estimated per serving):\n` +
+                      `- Calories: ${recipe.nutrition.calories}\n` +
+                      `- Protein: ${recipe.nutrition.protein}\n` +
+                      `- Carbs: ${recipe.nutrition.carbs}\n` +
+                      `- Fat: ${recipe.nutrition.fat}`;
+    }
+
     const fullRecipeText = `Recipe: ${recipe.recipeName}\n\n` +
                       `${recipe.description}\n\n` +
+                      `Difficulty: ${recipe.difficulty}` +
+                      `${nutritionText}\n\n` +
                       `Ingredients:\n${ingredientsText}\n\n` +
                       `Instructions:\n${instructionsText}`;
 
@@ -85,21 +96,35 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
     }
   };
 
+  const getDifficultyBadge = (difficulty: string) => {
+    if (!difficulty) return null; // Handle older saved recipes without difficulty
+    const lowerCaseDifficulty = difficulty.toLowerCase();
+    let colorClasses = 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'; // Default
+    if (lowerCaseDifficulty.includes('easy')) {
+        colorClasses = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300';
+    } else if (lowerCaseDifficulty.includes('medium')) {
+        colorClasses = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/60 dark:text-yellow-300';
+    } else if (lowerCaseDifficulty.includes('hard')) {
+        colorClasses = 'bg-red-100 text-red-800 dark:bg-red-900/60 dark:text-red-300';
+    }
+    return (
+        <span className={`inline-block px-2.5 py-1 text-xs font-semibold rounded-full ${colorClasses}`}>
+            {difficulty}
+        </span>
+    );
+  };
+
   const buttonText = showConfirmation ? 'Saved!' : (isSaved ? 'Saved' : 'Save Recipe');
   
-  // Define base classes for the button, including transitions for a smooth effect
   const baseButtonClasses = "w-full px-4 py-2 text-white font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-800";
 
   const getDynamicButtonClasses = () => {
     if (showConfirmation) {
-      // Confirmation state: bright green, slightly larger to provide prominent feedback
       return `${baseButtonClasses} bg-lime-500 scale-110 focus:ring-lime-400`;
     }
     if (isSaved) {
-      // Saved/disabled state: neutral and non-interactive
       return `${baseButtonClasses} bg-slate-400 cursor-not-allowed shadow-none`;
     }
-    // Default active state
     return `${baseButtonClasses} bg-emerald-500 hover:bg-emerald-600 active:scale-95 focus:ring-emerald-400`;
   };
   
@@ -129,21 +154,52 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
                 {onToggleFavorite && (
                     <button
                     onClick={() => onToggleFavorite(recipe)}
-                    className={`p-1 rounded-full transition-colors duration-200 ${
+                    className={`p-1 rounded-full transition-all duration-200 transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 ${
                         isFavorite
-                        ? 'text-yellow-400 hover:text-yellow-500'
+                        ? 'text-yellow-400'
                         : 'text-slate-400 hover:text-yellow-400'
                     }`}
                     aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                     title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                     >
-                    <StarIcon className={`w-6 h-6 ${isFavorite ? 'fill-current' : 'fill-none'}`} />
+                    <StarIcon className={`w-6 h-6 transition-transform ${isFavorite ? 'fill-current' : 'fill-none'}`} />
                     </button>
                 )}
             </div>
         </div>
+        {recipe.difficulty && (
+            <div className="mb-4">
+                {getDifficultyBadge(recipe.difficulty)}
+            </div>
+        )}
         <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">{recipe.description}</p>
         
+        {recipe.nutrition && (
+          <div className="mb-4">
+            <h4 className="font-semibold text-slate-700 dark:text-slate-300 mb-2 text-sm">
+              Nutritional Info <span className="font-normal text-xs text-slate-500 dark:text-slate-400">(est. per serving)</span>
+            </h4>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+              <div className="bg-slate-100 dark:bg-slate-700/50 p-2 rounded-lg">
+                <p className="text-xs text-slate-500 dark:text-slate-400">Calories</p>
+                <p className="font-bold text-sm text-emerald-600 dark:text-emerald-400">{recipe.nutrition.calories}</p>
+              </div>
+              <div className="bg-slate-100 dark:bg-slate-700/50 p-2 rounded-lg">
+                <p className="text-xs text-slate-500 dark:text-slate-400">Protein</p>
+                <p className="font-bold text-sm text-emerald-600 dark:text-emerald-400">{recipe.nutrition.protein}</p>
+              </div>
+              <div className="bg-slate-100 dark:bg-slate-700/50 p-2 rounded-lg">
+                <p className="text-xs text-slate-500 dark:text-slate-400">Carbs</p>
+                <p className="font-bold text-sm text-emerald-600 dark:text-emerald-400">{recipe.nutrition.carbs}</p>
+              </div>
+              <div className="bg-slate-100 dark:bg-slate-700/50 p-2 rounded-lg">
+                <p className="text-xs text-slate-500 dark:text-slate-400">Fat</p>
+                <p className="font-bold text-sm text-emerald-600 dark:text-emerald-400">{recipe.nutrition.fat}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="space-y-4">
           <div>
             <h4 className="font-semibold text-slate-700 dark:text-slate-300 mb-2 border-b border-slate-200 dark:border-slate-700 pb-1">Ingredients</h4>

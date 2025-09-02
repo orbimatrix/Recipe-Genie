@@ -8,6 +8,29 @@ if (!process.env.API_KEY) {
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
+const nutritionSchema = {
+  type: Type.OBJECT,
+  properties: {
+    calories: {
+      type: Type.STRING,
+      description: "Estimated calories per serving, e.g., '350 kcal'",
+    },
+    protein: {
+      type: Type.STRING,
+      description: "Estimated protein per serving, e.g., '30g'",
+    },
+    carbs: {
+      type: Type.STRING,
+      description: "Estimated carbohydrates per serving, e.g., '25g'",
+    },
+    fat: {
+      type: Type.STRING,
+      description: "Estimated fat per serving, e.g., '15g'",
+    },
+  },
+  required: ["calories", "protein", "carbs", "fat"],
+};
+
 const recipeSchema = {
   type: Type.ARRAY,
   items: {
@@ -20,6 +43,10 @@ const recipeSchema = {
       description: {
         type: Type.STRING,
         description: 'A short, enticing description of the dish.',
+      },
+      difficulty: {
+        type: Type.STRING,
+        description: 'The difficulty level of the recipe, e.g., "Easy", "Medium", or "Hard".',
       },
       ingredients: {
         type: Type.ARRAY,
@@ -35,8 +62,9 @@ const recipeSchema = {
         },
         description: 'Step-by-step instructions to prepare the dish.',
       },
+      nutrition: nutritionSchema,
     },
-    required: ["recipeName", "description", "ingredients", "instructions"],
+    required: ["recipeName", "description", "difficulty", "ingredients", "instructions", "nutrition"],
   },
 };
 
@@ -60,7 +88,8 @@ export const generateRecipes = async (
     }
     
     prompt += `
-      For each recipe, provide a unique name, a short description, a full list of ingredients, and step-by-step instructions.
+      For each recipe, provide a unique name, a short description, a difficulty level (Easy, Medium, or Hard), a full list of ingredients, and step-by-step instructions.
+      Also, provide estimated nutritional information per serving, including calories, protein, carbs, and fat.
       Ensure the response strictly follows the provided JSON schema.
     `;
 
