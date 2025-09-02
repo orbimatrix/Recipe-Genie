@@ -1,12 +1,34 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import {
+  Box,
+  Card,
+  CardBody,
+  CardHeader,
+  Heading,
+  Text,
+  Badge,
+  HStack,
+  VStack,
+  Button,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Checkbox,
+  List,
+  ListItem,
+  OrderedList,
+  Grid,
+  GridItem,
+  useColorModeValue,
+  useToast,
+  Tooltip,
+  Divider,
+} from '@chakra-ui/react';
+import { FaStar, FaShare, FaCheck, FaTwitter, FaFacebook, FaLink, FaCopy } from 'react-icons/fa';
 import type { Recipe } from '../types';
-import { StarIcon } from './icons/StarIcon';
-import { ShareIcon } from './icons/ShareIcon';
-import { CheckIcon } from './icons/CheckIcon';
-import { TwitterIcon } from './icons/TwitterIcon';
-import { FacebookIcon } from './icons/FacebookIcon';
-import { LinkIcon } from './icons/LinkIcon';
 
 
 interface RecipeCardProps {
@@ -21,27 +43,15 @@ interface RecipeCardProps {
 
 export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove, isSaved, isGeneratedInSession, onToggleFavorite, isFavorite }) => {
   const [checkedIngredients, setCheckedIngredients] = useState<Set<number>>(new Set());
-  const [showConfirmation, setShowConfirmation] = useState(false);
   const [isRecipeTextCopied, setIsRecipeTextCopied] = useState(false);
-  const [showShareOptions, setShowShareOptions] = useState(false);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
-  const shareMenuRef = useRef<HTMLDivElement>(null);
+  
+  const toast = useToast();
+  const cardBg = useColorModeValue('white', 'gray.800');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
   
   const recipeId = recipe.id || recipe.recipeName;
   const shareUrl = `${window.location.origin}${window.location.pathname}?recipeId=${encodeURIComponent(recipeId)}`;
-
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
-        setShowShareOptions(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   const handleIngredientCheck = (index: number) => {
     setCheckedIngredients(prevChecked => {
@@ -58,10 +68,13 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
   const handleSave = () => {
     if (onSave && !isSaved) {
       onSave(recipe);
-      setShowConfirmation(true);
-      setTimeout(() => {
-        setShowConfirmation(false);
-      }, 1500); // Confirmation message for 1.5 seconds
+      toast({
+        title: "Recipe Saved!",
+        description: `${recipe.recipeName} has been added to your saved recipes.`,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
     }
   };
 
@@ -77,10 +90,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
         });
       } catch (err) {
         console.error('Failed to share:', err);
-        setShowShareOptions(prev => !prev);
       }
-    } else {
-      setShowShareOptions(prev => !prev);
     }
   };
 
@@ -89,10 +99,16 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
       try {
         await navigator.clipboard.writeText(shareUrl);
         setIsLinkCopied(true);
+        toast({
+          title: "Link Copied!",
+          description: "Recipe link has been copied to clipboard.",
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+        });
         setTimeout(() => {
           setIsLinkCopied(false);
-          setShowShareOptions(false);
-        }, 1500);
+        }, 2000);
       } catch (err) {
         console.error('Failed to copy link:', err);
       }
@@ -123,225 +139,246 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
         try {
             await navigator.clipboard.writeText(fullRecipeText);
             setIsRecipeTextCopied(true);
+            toast({
+              title: "Recipe Copied!",
+              description: "Full recipe has been copied to clipboard.",
+              status: "success",
+              duration: 2000,
+              isClosable: true,
+            });
             setTimeout(() => {
                 setIsRecipeTextCopied(false);
-            }, 2000); // Show confirmation for 2 seconds
+            }, 2000);
         } catch (err) {
             console.error('Failed to copy recipe:', err);
-            alert('Failed to copy recipe.');
+            toast({
+              title: "Copy Failed",
+              description: "Failed to copy recipe to clipboard.",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
         }
     } else {
-        alert('Clipboard functionality is not available in your browser.');
+        toast({
+          title: "Clipboard Not Available",
+          description: "Clipboard functionality is not available in your browser.",
+          status: "warning",
+          duration: 3000,
+          isClosable: true,
+        });
     }
   };
 
   const getDifficultyBadge = (difficulty: string) => {
-    if (!difficulty) return null; // Handle older saved recipes without difficulty
+    if (!difficulty) return null;
     const lowerCaseDifficulty = difficulty.toLowerCase();
-    let colorClasses = 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'; // Default
+    let colorScheme = 'gray';
     if (lowerCaseDifficulty.includes('easy')) {
-        colorClasses = 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300';
+      colorScheme = 'green';
     } else if (lowerCaseDifficulty.includes('medium')) {
-        colorClasses = 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/60 dark:text-yellow-300';
+      colorScheme = 'yellow';
     } else if (lowerCaseDifficulty.includes('hard')) {
-        colorClasses = 'bg-red-100 text-red-800 dark:bg-red-900/60 dark:text-red-300';
+      colorScheme = 'red';
     }
     return (
-        <span className={`inline-block px-2.5 py-1 text-xs font-semibold rounded-full ${colorClasses}`}>
-            {difficulty}
-        </span>
+      <Badge colorScheme={colorScheme} size="sm">
+        {difficulty}
+      </Badge>
     );
   };
 
-  const buttonText = showConfirmation ? 'Saved!' : (isSaved ? 'Saved' : 'Save Recipe');
-  
-  const baseButtonClasses = "w-full px-4 py-2 text-white font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-800";
-
-  const getDynamicButtonClasses = () => {
-    if (showConfirmation) {
-      return `${baseButtonClasses} bg-lime-500 scale-110 focus:ring-lime-400`;
-    }
-    if (isSaved) {
-      return `${baseButtonClasses} bg-slate-400 cursor-not-allowed shadow-none`;
-    }
-    return `${baseButtonClasses} bg-emerald-500 hover:bg-emerald-600 active:scale-95 focus:ring-emerald-400`;
-  };
-  
-  const saveButtonClass = getDynamicButtonClasses();
-
-  const cardClasses = `bg-white dark:bg-slate-800 rounded-xl shadow-lg flex flex-col overflow-hidden transform hover:scale-105 transition-transform duration-300 ease-in-out ${isGeneratedInSession ? 'ring-2 ring-cyan-500' : 'ring-1 ring-slate-900/5'}`;
-  
   const shareText = `Check out this recipe for ${recipe.recipeName}!`;
   const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
   const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
 
   return (
-    <div className={cardClasses}>
-      <div className="p-6 flex-grow">
-        <div className="flex justify-between items-start mb-4 gap-4">
-          <div className="flex-1">
-            <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">{recipe.recipeName}</h3>
-            {recipe.difficulty && (
-                <div>
-                    {getDifficultyBadge(recipe.difficulty)}
-                </div>
-            )}
-          </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-              <div className="relative">
-                <button
-                    onClick={handleShare}
-                    className="p-1 rounded-full transition-colors duration-200 text-slate-400 hover:text-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
-                    aria-label='Share recipe'
-                    title='Share recipe'
-                >
-                  <ShareIcon className="w-6 h-6" />
-                </button>
-                {showShareOptions && (
-                  <div
-                    ref={shareMenuRef}
-                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-700 rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 z-10 origin-top-right animate-fade-in-down"
+    <Card 
+      bg={cardBg} 
+      shadow="lg" 
+      borderRadius="xl" 
+      overflow="hidden"
+      border={isGeneratedInSession ? "2px solid" : "1px solid"}
+      borderColor={isGeneratedInSession ? "cyan.500" : borderColor}
+      _hover={{ transform: "scale(1.02)" }}
+      transition="all 0.3s ease"
+    >
+      <CardBody p={6}>
+        <VStack spacing={4} align="stretch">
+          {/* Header */}
+          <HStack justify="space-between" align="start">
+            <VStack align="start" spacing={2} flex={1}>
+              <Heading size="md" color="green.500">
+                {recipe.recipeName}
+              </Heading>
+              {recipe.difficulty && getDifficultyBadge(recipe.difficulty)}
+            </VStack>
+            <HStack spacing={2}>
+              <Menu>
+                <MenuButton
+                  as={IconButton}
+                  icon={<FaShare />}
+                  variant="ghost"
+                  size="sm"
+                  color="gray.500"
+                  _hover={{ color: "green.500" }}
+                />
+                <MenuList>
+                  <MenuItem icon={<FaTwitter />} onClick={() => window.open(twitterUrl, '_blank')}>
+                    Share on Twitter
+                  </MenuItem>
+                  <MenuItem icon={<FaFacebook />} onClick={() => window.open(facebookUrl, '_blank')}>
+                    Share on Facebook
+                  </MenuItem>
+                  <MenuItem 
+                    icon={isLinkCopied ? <FaCheck /> : <FaLink />} 
+                    onClick={handleCopyLink}
+                    color={isLinkCopied ? "green.500" : undefined}
                   >
-                    <div className="py-1">
-                      <a href={twitterUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600">
-                        <TwitterIcon className="w-5 h-5" />
-                        <span>Share on Twitter</span>
-                      </a>
-                      <a href={facebookUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600">
-                        <FacebookIcon className="w-5 h-5" />
-                        <span>Share on Facebook</span>
-                      </a>
-                      <button onClick={handleCopyLink} className="w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600">
-                        {isLinkCopied ? <CheckIcon className="w-5 h-5 text-emerald-500" /> : <LinkIcon className="w-5 h-5" />}
-                        <span>{isLinkCopied ? 'Copied!' : 'Copy Link'}</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
+                    {isLinkCopied ? 'Copied!' : 'Copy Link'}
+                  </MenuItem>
+                </MenuList>
+              </Menu>
               {onToggleFavorite && (
-                  <button
-                  onClick={() => onToggleFavorite(recipe)}
-                  className={`p-1 rounded-full transition-all duration-200 transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 ${
-                      isFavorite
-                      ? 'text-yellow-400'
-                      : 'text-slate-400 hover:text-yellow-400'
-                  }`}
-                  aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                  title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                  >
-                  <StarIcon className={`w-6 h-6 transition-transform ${isFavorite ? 'fill-current' : 'fill-none'}`} />
-                  </button>
-              )}
-          </div>
-        </div>
-        
-        <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm leading-relaxed">{recipe.description}</p>
-        
-        {recipe.source && (
-            <div className="mb-4">
-                <p className="text-xs text-slate-500 dark:text-slate-500">
-                    <span className="font-semibold text-slate-600 dark:text-slate-400">Source:</span> {recipe.source}
-                </p>
-            </div>
-        )}
-
-        {recipe.nutrition && (
-          <div className="mb-4">
-            <h4 className="font-semibold text-slate-700 dark:text-slate-300 mb-2 text-sm">
-              Nutritional Info <span className="font-normal text-xs text-slate-500 dark:text-slate-400">(est. per serving)</span>
-            </h4>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-              <div className="bg-slate-100 dark:bg-slate-700/50 p-2 rounded-lg">
-                <p className="text-xs text-slate-500 dark:text-slate-400">Calories</p>
-                <p className="font-bold text-sm text-emerald-600 dark:text-emerald-400">{recipe.nutrition.calories}</p>
-              </div>
-              <div className="bg-slate-100 dark:bg-slate-700/50 p-2 rounded-lg">
-                <p className="text-xs text-slate-500 dark:text-slate-400">Protein</p>
-                <p className="font-bold text-sm text-emerald-600 dark:text-emerald-400">{recipe.nutrition.protein}</p>
-              </div>
-              <div className="bg-slate-100 dark:bg-slate-700/50 p-2 rounded-lg">
-                <p className="text-xs text-slate-500 dark:text-slate-400">Carbs</p>
-                <p className="font-bold text-sm text-emerald-600 dark:text-emerald-400">{recipe.nutrition.carbs}</p>
-              </div>
-              <div className="bg-slate-100 dark:bg-slate-700/50 p-2 rounded-lg">
-                <p className="text-xs text-slate-500 dark:text-slate-400">Fat</p>
-                <p className="font-bold text-sm text-emerald-600 dark:text-emerald-400">{recipe.nutrition.fat}</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div className="space-y-4">
-          <div>
-            <h4 className="font-semibold text-slate-700 dark:text-slate-300 mb-2 border-b border-slate-200 dark:border-slate-700 pb-1">Ingredients</h4>
-            <div className="space-y-2">
-              {recipe.ingredients.map((ingredient, index) => (
-                <label key={index} className="flex items-center text-slate-600 dark:text-slate-400 text-sm cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={checkedIngredients.has(index)}
-                    onChange={() => handleIngredientCheck(index)}
-                    className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-emerald-500 focus:ring-emerald-500 bg-transparent"
+                <Tooltip label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}>
+                  <IconButton
+                    icon={<FaStar />}
+                    variant="ghost"
+                    size="sm"
+                    color={isFavorite ? "yellow.400" : "gray.400"}
+                    _hover={{ color: "yellow.400" }}
+                    onClick={() => onToggleFavorite(recipe)}
+                    aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                   />
-                  <span className={`ml-3 transition-colors ${checkedIngredients.has(index) ? 'line-through text-slate-500 dark:text-slate-500' : ''}`}>
+                </Tooltip>
+              )}
+            </HStack>
+          </HStack>
+
+          {/* Description */}
+          <Text color="gray.600" fontSize="sm">
+            {recipe.description}
+          </Text>
+
+          {/* Source */}
+          {recipe.source && (
+            <Text fontSize="xs" color="gray.500">
+              <Text as="span" fontWeight="semibold">Source:</Text> {recipe.source}
+            </Text>
+          )}
+
+          {/* Nutrition */}
+          {recipe.nutrition && (
+            <Box>
+              <Text fontWeight="semibold" fontSize="sm" mb={2}>
+                Nutritional Info <Text as="span" fontWeight="normal" fontSize="xs" color="gray.500">(est. per serving)</Text>
+              </Text>
+              <Grid templateColumns="repeat(4, 1fr)" gap={2}>
+                <GridItem>
+                  <Box bg="gray.100" p={2} borderRadius="md" textAlign="center">
+                    <Text fontSize="xs" color="gray.500">Calories</Text>
+                    <Text fontWeight="bold" fontSize="sm" color="green.500">{recipe.nutrition.calories}</Text>
+                  </Box>
+                </GridItem>
+                <GridItem>
+                  <Box bg="gray.100" p={2} borderRadius="md" textAlign="center">
+                    <Text fontSize="xs" color="gray.500">Protein</Text>
+                    <Text fontWeight="bold" fontSize="sm" color="green.500">{recipe.nutrition.protein}</Text>
+                  </Box>
+                </GridItem>
+                <GridItem>
+                  <Box bg="gray.100" p={2} borderRadius="md" textAlign="center">
+                    <Text fontSize="xs" color="gray.500">Carbs</Text>
+                    <Text fontWeight="bold" fontSize="sm" color="green.500">{recipe.nutrition.carbs}</Text>
+                  </Box>
+                </GridItem>
+                <GridItem>
+                  <Box bg="gray.100" p={2} borderRadius="md" textAlign="center">
+                    <Text fontSize="xs" color="gray.500">Fat</Text>
+                    <Text fontWeight="bold" fontSize="sm" color="green.500">{recipe.nutrition.fat}</Text>
+                  </Box>
+                </GridItem>
+              </Grid>
+            </Box>
+          )}
+
+          <Divider />
+
+          {/* Ingredients */}
+          <Box>
+            <Text fontWeight="semibold" fontSize="sm" mb={2} borderBottom="1px" borderColor={borderColor} pb={1}>
+              Ingredients
+            </Text>
+            <VStack spacing={2} align="stretch">
+              {recipe.ingredients.map((ingredient, index) => (
+                <HStack key={index} spacing={3}>
+                  <Checkbox
+                    isChecked={checkedIngredients.has(index)}
+                    onChange={() => handleIngredientCheck(index)}
+                    colorScheme="green"
+                  />
+                  <Text 
+                    fontSize="sm" 
+                    color="gray.600"
+                    textDecoration={checkedIngredients.has(index) ? "line-through" : "none"}
+                    opacity={checkedIngredients.has(index) ? 0.6 : 1}
+                  >
                     {ingredient}
-                  </span>
-                </label>
+                  </Text>
+                </HStack>
               ))}
-            </div>
-          </div>
+            </VStack>
+          </Box>
 
-          <div>
-            <h4 className="font-semibold text-slate-700 dark:text-slate-300 mb-2 border-b border-slate-200 dark:border-slate-700 pb-1">Instructions</h4>
-            <ol className="list-decimal list-inside space-y-2 text-slate-600 dark:text-slate-400 text-sm">
+          {/* Instructions */}
+          <Box>
+            <Text fontWeight="semibold" fontSize="sm" mb={2} borderBottom="1px" borderColor={borderColor} pb={1}>
+              Instructions
+            </Text>
+            <OrderedList spacing={2}>
               {recipe.instructions.map((step, index) => (
-                <li key={index}>{step}</li>
+                <ListItem key={index} fontSize="sm" color="gray.600">
+                  {step}
+                </ListItem>
               ))}
-            </ol>
-          </div>
-        </div>
-      </div>
+            </OrderedList>
+          </Box>
 
-      <div className="p-6 pt-0 mt-auto">
-        <div className="space-y-2">
-          {onSave && (
-            <button
-              onClick={handleSave}
-              disabled={isSaved || showConfirmation}
-              className={saveButtonClass}
-            >
-              {buttonText}
-            </button>
-          )}
-          {onRemove && (
-            <button
-              onClick={() => onRemove(recipe)}
-              className="w-full px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all duration-200"
-            >
-              Remove
-            </button>
-          )}
-          <button
+          {/* Action Buttons */}
+          <VStack spacing={2} align="stretch">
+            {onSave && (
+              <Button
+                onClick={handleSave}
+                disabled={isSaved}
+                colorScheme="green"
+                size="sm"
+              >
+                {isSaved ? 'Saved' : 'Save Recipe'}
+              </Button>
+            )}
+            {onRemove && (
+              <Button
+                onClick={() => onRemove(recipe)}
+                colorScheme="red"
+                size="sm"
+                variant="outline"
+              >
+                Remove
+              </Button>
+            )}
+            <Button
               onClick={handleCopyRecipe}
               disabled={isRecipeTextCopied}
-              className={`w-full px-4 py-2 font-semibold rounded-lg shadow-md transition-all duration-200 flex items-center justify-center gap-2 ${
-                  isRecipeTextCopied
-                  ? 'bg-emerald-500 text-white cursor-not-allowed'
-                  : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-              }`}
-          >
-              {isRecipeTextCopied ? (
-                  <>
-                      <CheckIcon className="w-5 h-5" />
-                      <span>Copied!</span>
-                  </>
-              ) : (
-                  <span>Copy Recipe</span>
-              )}
-          </button>
-        </div>
-      </div>
-    </div>
+              variant="outline"
+              size="sm"
+              leftIcon={isRecipeTextCopied ? <FaCheck /> : <FaCopy />}
+              colorScheme={isRecipeTextCopied ? "green" : "gray"}
+            >
+              {isRecipeTextCopied ? 'Copied!' : 'Copy Recipe'}
+            </Button>
+          </VStack>
+        </VStack>
+      </CardBody>
+    </Card>
   );
 };
