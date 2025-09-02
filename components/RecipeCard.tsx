@@ -1,7 +1,8 @@
-
 import React, { useState } from 'react';
 import type { Recipe } from '../types';
 import { StarIcon } from './icons/StarIcon';
+import { ShareIcon } from './icons/ShareIcon';
+import { CheckIcon } from './icons/CheckIcon';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -16,6 +17,7 @@ interface RecipeCardProps {
 export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove, isSaved, isGeneratedInSession, onToggleFavorite, isFavorite }) => {
   const [checkedIngredients, setCheckedIngredients] = useState<Set<number>>(new Set());
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const handleIngredientCheck = (index: number) => {
     setCheckedIngredients(prevChecked => {
@@ -39,6 +41,24 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
     }
   };
 
+  const handleShare = async () => {
+    if (navigator.clipboard) {
+        const shareText = `Check out this recipe: ${recipe.recipeName}\n\n${recipe.description}`;
+        try {
+            await navigator.clipboard.writeText(shareText);
+            setIsCopied(true);
+            setTimeout(() => {
+                setIsCopied(false);
+            }, 2000); // Show confirmation for 2 seconds
+        } catch (err) {
+            console.error('Failed to copy recipe:', err);
+            alert('Failed to copy recipe.');
+        }
+    } else {
+        alert('Clipboard functionality is not available in your browser.');
+    }
+  };
+
   const buttonText = showConfirmation ? 'Saved!' : (isSaved ? 'Saved' : 'Save Recipe');
   
   // Define base classes for the button, including transitions for a smooth effect
@@ -47,7 +67,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
   const getDynamicButtonClasses = () => {
     if (showConfirmation) {
       // Confirmation state: bright green, slightly larger to provide prominent feedback
-      return `${baseButtonClasses} bg-green-500 scale-105 focus:ring-green-400`;
+      return `${baseButtonClasses} bg-lime-500 scale-110 focus:ring-lime-400`;
     }
     if (isSaved) {
       // Saved/disabled state: neutral and non-interactive
@@ -64,22 +84,37 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
   return (
     <div className={cardClasses}>
       <div className="p-6 flex-grow">
-        <div className="flex justify-between items-start mb-2">
-            <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 pr-2">{recipe.recipeName}</h3>
-            {onToggleFavorite && (
+        <div className="flex justify-between items-start mb-2 gap-2">
+            <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 pr-2 flex-1">{recipe.recipeName}</h3>
+            <div className="flex items-center gap-2">
                 <button
-                onClick={() => onToggleFavorite(recipe)}
-                className={`p-1 rounded-full transition-colors duration-200 ${
-                    isFavorite
-                    ? 'text-yellow-400 hover:text-yellow-500'
-                    : 'text-slate-400 hover:text-yellow-400'
-                }`}
-                aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                    onClick={handleShare}
+                    className="p-1 rounded-full transition-colors duration-200 text-slate-400 hover:text-emerald-500"
+                    aria-label={isCopied ? 'Copied to clipboard' : 'Share recipe'}
+                    title={isCopied ? 'Copied!' : 'Share recipe'}
+                    disabled={isCopied}
                 >
-                <StarIcon className={`w-6 h-6 ${isFavorite ? 'fill-current' : 'fill-none'}`} />
+                    {isCopied ? (
+                        <CheckIcon className="w-6 h-6 text-emerald-500" />
+                    ) : (
+                        <ShareIcon className="w-6 h-6" />
+                    )}
                 </button>
-            )}
+                {onToggleFavorite && (
+                    <button
+                    onClick={() => onToggleFavorite(recipe)}
+                    className={`p-1 rounded-full transition-colors duration-200 ${
+                        isFavorite
+                        ? 'text-yellow-400 hover:text-yellow-500'
+                        : 'text-slate-400 hover:text-yellow-400'
+                    }`}
+                    aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                    title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                    >
+                    <StarIcon className={`w-6 h-6 ${isFavorite ? 'fill-current' : 'fill-none'}`} />
+                    </button>
+                )}
+            </div>
         </div>
         <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">{recipe.description}</p>
         
