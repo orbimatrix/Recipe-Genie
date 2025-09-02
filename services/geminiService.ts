@@ -2,11 +2,11 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import type { Recipe } from '../types';
 
-if (!process.env.GEMINI_API_KEY ) {
-  throw new Error("PUBLIC_API_KEY environment variable not set xd");
+if (!import.meta.env.VITE_GEMINI_API_KEY) {
+  throw new Error("VITE_GEMINI_API_KEY environment variable not set. Please add your Gemini API key to the .env file.");
 }
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 const nutritionSchema = {
   type: Type.OBJECT,
