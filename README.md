@@ -39,22 +39,20 @@ To run this application, you need a valid Google Gemini API key.
 
 ### API Key Configuration
 
-The application is configured to read the API key from an environment variable named `API_KEY`.
+The application is configured to read the API key from an environment variable named `VITE_GEMINI_API_KEY`.
 
-```javascript
-// From services/geminiService.ts
-if (!process.env.API_KEY) {
-  throw new Error("API_KEY environment variable not set");
-}
+1. Create a `.env` file in the root directory
+2. Add your Gemini API key to the `.env` file:
+   ```
+   VITE_GEMINI_API_KEY=your_actual_api_key_here
+   ```
+3. Get your API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-```
-
-Ensure this environment variable is set in the execution environment where the application is hosted. The app **does not** provide a UI to enter the key.
+**Important Security Note**: The `.env` file is already included in `.gitignore` to prevent accidentally committing your API key to version control.
 
 ### Running the Application
 
-1.  Make sure the `API_KEY` environment variable is available.
+1. Make sure you have created the `.env` file with your `VITE_GEMINI_API_KEY`
 2.  Serve the `index.html` file using a local web server. The project is designed to work with its current file structure and the provided `importmap` for dependencies.
 
 ## 📂 Project Structure
