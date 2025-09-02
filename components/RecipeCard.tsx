@@ -232,6 +232,14 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
         )}
         <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">{recipe.description}</p>
         
+        {recipe.source && (
+            <div className="mb-4">
+                <p className="text-xs text-slate-500 dark:text-slate-500">
+                    <span className="font-semibold text-slate-600 dark:text-slate-400">Source:</span> {recipe.source}
+                </p>
+            </div>
+        )}
+
         {recipe.nutrition && (
           <div className="mb-4">
             <h4 className="font-semibold text-slate-700 dark:text-slate-300 mb-2 text-sm">

@@ -63,11 +63,16 @@ const App: React.FC = () => {
   
   const saveRecipe = useCallback((recipeToSave: Recipe) => {
     setSavedRecipes(prevSaved => {
+      // Prevent saving duplicates based on recipe name
       if (prevSaved.some(r => r.recipeName === recipeToSave.recipeName)) {
         return prevSaved;
       }
-      const recipeWithTimestamp = { ...recipeToSave, savedAt: Date.now() };
-      const newSavedRecipes = [...prevSaved, recipeWithTimestamp];
+      const recipeWithIdAndTimestamp = { 
+        ...recipeToSave, 
+        id: `recipe-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+        savedAt: Date.now() 
+      };
+      const newSavedRecipes = [...prevSaved, recipeWithIdAndTimestamp];
       localStorage.setItem('savedRecipes', JSON.stringify(newSavedRecipes));
       return newSavedRecipes;
     });
@@ -75,7 +80,10 @@ const App: React.FC = () => {
 
   const removeRecipe = useCallback((recipeToRemove: Recipe) => {
     setSavedRecipes(prevSaved => {
-      const newSavedRecipes = prevSaved.filter(r => r.recipeName !== recipeToRemove.recipeName);
+      // Use the unique ID for removal, with a fallback to recipeName for backward compatibility
+      const newSavedRecipes = prevSaved.filter(r => 
+        recipeToRemove.id ? r.id !== recipeToRemove.id : r.recipeName !== recipeToRemove.recipeName
+      );
       localStorage.setItem('savedRecipes', JSON.stringify(newSavedRecipes));
       return newSavedRecipes;
     });
@@ -106,9 +114,12 @@ const App: React.FC = () => {
     return savedRecipes.some(r => r.recipeName === recipe.recipeName);
   };
 
-  const isRecipeFavorite = (recipe: Recipe) => {
-    return favoriteRecipes.some(r => r.recipeName === recipe.recipeName);
-  }
+  const favoriteRecipeNames = useMemo(() => new Set(favoriteRecipes.map(r => r.recipeName)), [favoriteRecipes]);
+  
+  const isRecipeFavorite = useCallback((recipe: Recipe) => {
+    return favoriteRecipeNames.has(recipe.recipeName);
+  }, [favoriteRecipeNames]);
+
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -287,9 +298,9 @@ const App: React.FC = () => {
                   </div>
                 </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredSavedRecipes.map((recipe, index) => (
+                {filteredSavedRecipes.map((recipe) => (
                   <RecipeCard 
-                    key={index} 
+                    key={recipe.id || recipe.recipeName}
                     recipe={recipe} 
                     onRemove={removeRecipe}
                     isGeneratedInSession={currentRecipeNames.has(recipe.recipeName)}

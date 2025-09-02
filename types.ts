@@ -7,6 +7,7 @@ export interface Nutrition {
 }
 
 export interface Recipe {
+  id?: string;
   recipeName: string;
   description: string;
   difficulty: string;
@@ -14,4 +15,5 @@ export interface Recipe {
   instructions: string[];
   nutrition?: Nutrition;
   savedAt?: number;
+  source?: string;
 }
