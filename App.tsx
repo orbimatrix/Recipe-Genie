@@ -12,6 +12,7 @@ const App: React.FC = () => {
   const [prioritizeIngredients, setPrioritizeIngredients] = useState<string>('');
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [savedRecipes, setSavedRecipes] = useState<Recipe[]>([]);
+  const [favoriteRecipes, setFavoriteRecipes] = useState<Recipe[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [savedRecipesSearchTerm, setSavedRecipesSearchTerm] = useState<string>('');
@@ -24,9 +25,14 @@ const App: React.FC = () => {
       if (storedRecipes) {
         setSavedRecipes(JSON.parse(storedRecipes));
       }
+      const storedFavorites = localStorage.getItem('favoriteRecipes');
+      if (storedFavorites) {
+        setFavoriteRecipes(JSON.parse(storedFavorites));
+      }
     } catch (error) {
-      console.error("Failed to parse saved recipes from localStorage", error);
+      console.error("Failed to parse recipes from localStorage", error);
       setSavedRecipes([]);
+      setFavoriteRecipes([]);
     }
   }, []);
 
@@ -48,7 +54,7 @@ const App: React.FC = () => {
       }
     } catch (err) {
       console.error('Error generating recipes:', err);
-      setError('An unexpected error occurred. Please check your API key and try again.');
+      setError('Failed to generate recipes. This could be due to an invalid API key or a network problem. Please check and try again.');
     } finally {
       setIsLoading(false);
     }
@@ -74,6 +80,20 @@ const App: React.FC = () => {
     });
   }, []);
 
+  const toggleFavoriteRecipe = useCallback((recipeToToggle: Recipe) => {
+    setFavoriteRecipes(prevFavorites => {
+      const isFavorited = prevFavorites.some(r => r.recipeName === recipeToToggle.recipeName);
+      let newFavorites;
+      if (isFavorited) {
+        newFavorites = prevFavorites.filter(r => r.recipeName !== recipeToToggle.recipeName);
+      } else {
+        newFavorites = [...prevFavorites, recipeToToggle];
+      }
+      localStorage.setItem('favoriteRecipes', JSON.stringify(newFavorites));
+      return newFavorites;
+    });
+  }, []);
+
   const clearAllSavedRecipes = useCallback(() => {
     if (window.confirm('Are you sure you want to remove all saved recipes? This action cannot be undone.')) {
         setSavedRecipes([]);
@@ -84,6 +104,10 @@ const App: React.FC = () => {
   const isRecipeSaved = (recipe: Recipe) => {
     return savedRecipes.some(r => r.recipeName === recipe.recipeName);
   };
+
+  const isRecipeFavorite = (recipe: Recipe) => {
+    return favoriteRecipes.some(r => r.recipeName === recipe.recipeName);
+  }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -103,6 +127,8 @@ const App: React.FC = () => {
       recipe.recipeName.toLowerCase().includes(savedRecipesSearchTerm.toLowerCase())
     );
   }, [savedRecipes, savedRecipesSearchTerm, sortOrder]);
+
+  const currentRecipeNames = useMemo(() => new Set(recipes.map(r => r.recipeName)), [recipes]);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans p-4 sm:p-6 lg:p-8">
@@ -188,8 +214,16 @@ const App: React.FC = () => {
           <div className="mt-10">
             {error && (
               <div className="bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg text-center" role="alert">
-                <strong className="font-bold">Oops! </strong>
-                <span className="block sm:inline">{error}</span>
+                <div className="flex flex-col items-center justify-center gap-3">
+                    <strong className="font-bold">An Error Occurred</strong>
+                    <span>{error}</span>
+                    <button
+                        onClick={handleGenerateRecipes}
+                        className="px-4 py-2 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all duration-200"
+                    >
+                        Retry
+                    </button>
+                </div>
               </div>
             )}
 
@@ -206,6 +240,8 @@ const App: React.FC = () => {
                   recipe={recipe} 
                   onSave={saveRecipe} 
                   isSaved={isRecipeSaved(recipe)} 
+                  onToggleFavorite={toggleFavoriteRecipe}
+                  isFavorite={isRecipeFavorite(recipe)}
                 />
               ))}
             </div>
@@ -245,7 +281,38 @@ const App: React.FC = () => {
                 </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredSavedRecipes.map((recipe, index) => (
-                  <RecipeCard key={index} recipe={recipe} onRemove={removeRecipe} />
+                  <RecipeCard 
+                    key={index} 
+                    recipe={recipe} 
+                    onRemove={removeRecipe}
+                    isGeneratedInSession={currentRecipeNames.has(recipe.recipeName)}
+                    onToggleFavorite={toggleFavoriteRecipe}
+                    isFavorite={isRecipeFavorite(recipe)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {favoriteRecipes.length > 0 && (
+             <div className="mt-16 pt-8 border-t border-slate-200 dark:border-slate-700">
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+                  <h2 className="text-3xl font-bold text-slate-700 dark:text-slate-300">
+                    My Favorite Recipes
+                  </h2>
+                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {favoriteRecipes.map((recipe, index) => (
+                  <RecipeCard
+                    key={index}
+                    recipe={recipe}
+                    onRemove={isRecipeSaved(recipe) ? removeRecipe : undefined}
+                    onSave={!isRecipeSaved(recipe) ? saveRecipe : undefined}
+                    isSaved={isRecipeSaved(recipe)}
+                    onToggleFavorite={toggleFavoriteRecipe}
+                    isFavorite={true}
+                    isGeneratedInSession={currentRecipeNames.has(recipe.recipeName)}
+                  />
                 ))}
               </div>
             </div>

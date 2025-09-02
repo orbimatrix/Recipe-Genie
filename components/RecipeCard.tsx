@@ -1,14 +1,19 @@
+
 import React, { useState } from 'react';
 import type { Recipe } from '../types';
+import { StarIcon } from './icons/StarIcon';
 
 interface RecipeCardProps {
   recipe: Recipe;
   onSave?: (recipe: Recipe) => void;
   onRemove?: (recipe: Recipe) => void;
   isSaved?: boolean;
+  isGeneratedInSession?: boolean;
+  onToggleFavorite?: (recipe: Recipe) => void;
+  isFavorite?: boolean;
 }
 
-export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove, isSaved }) => {
+export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove, isSaved, isGeneratedInSession, onToggleFavorite, isFavorite }) => {
   const [checkedIngredients, setCheckedIngredients] = useState<Set<number>>(new Set());
   const [showConfirmation, setShowConfirmation] = useState(false);
 
@@ -36,20 +41,46 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
 
   const buttonText = showConfirmation ? 'Saved!' : (isSaved ? 'Saved' : 'Save Recipe');
   
-  let saveButtonClass = "w-full px-4 py-2 text-white font-semibold rounded-lg shadow-md transition-all duration-200";
+  // Define base classes for the button, including transitions for a smooth effect
+  const baseButtonClasses = "w-full px-4 py-2 text-white font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-800";
 
-  if (showConfirmation) {
-    saveButtonClass += " bg-emerald-500 animate-pulse";
-  } else if (isSaved) {
-    saveButtonClass += " bg-slate-400 cursor-not-allowed shadow-none";
-  } else {
-    saveButtonClass += " bg-emerald-500 hover:bg-emerald-600";
-  }
+  const getDynamicButtonClasses = () => {
+    if (showConfirmation) {
+      // Confirmation state: bright green, slightly larger to provide prominent feedback
+      return `${baseButtonClasses} bg-green-500 scale-105 focus:ring-green-400`;
+    }
+    if (isSaved) {
+      // Saved/disabled state: neutral and non-interactive
+      return `${baseButtonClasses} bg-slate-400 cursor-not-allowed shadow-none`;
+    }
+    // Default active state
+    return `${baseButtonClasses} bg-emerald-500 hover:bg-emerald-600 active:scale-95 focus:ring-emerald-400`;
+  };
+  
+  const saveButtonClass = getDynamicButtonClasses();
+
+  const cardClasses = `bg-white dark:bg-slate-800 rounded-xl shadow-lg flex flex-col overflow-hidden transform hover:scale-105 transition-transform duration-300 ease-in-out ${isGeneratedInSession ? 'ring-2 ring-cyan-500' : 'ring-1 ring-slate-900/5'}`;
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg flex flex-col overflow-hidden transform hover:scale-105 transition-transform duration-300 ease-in-out ring-1 ring-slate-900/5">
+    <div className={cardClasses}>
       <div className="p-6 flex-grow">
-        <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">{recipe.recipeName}</h3>
+        <div className="flex justify-between items-start mb-2">
+            <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 pr-2">{recipe.recipeName}</h3>
+            {onToggleFavorite && (
+                <button
+                onClick={() => onToggleFavorite(recipe)}
+                className={`p-1 rounded-full transition-colors duration-200 ${
+                    isFavorite
+                    ? 'text-yellow-400 hover:text-yellow-500'
+                    : 'text-slate-400 hover:text-yellow-400'
+                }`}
+                aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                <StarIcon className={`w-6 h-6 ${isFavorite ? 'fill-current' : 'fill-none'}`} />
+                </button>
+            )}
+        </div>
         <p className="text-slate-600 dark:text-slate-400 mb-4 text-sm">{recipe.description}</p>
         
         <div className="space-y-4">
