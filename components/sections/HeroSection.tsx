@@ -175,26 +175,55 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartCooking }) => {
             >
               <AspectRatio ratio={4/5} maxW="400px" mx="auto">
                 <Box
-                  bgGradient="linear(to-br, green.100, blue.100)"
+                  backgroundImage="url('/chicken.jpg')"
+                  backgroundSize="cover"
+                  backgroundPosition="center"
+                  backgroundRepeat="no-repeat"
                   position="relative"
                   overflow="hidden"
                 >
+                  {/* Overlay for better content readability */}
+                  <Box
+                    position="absolute"
+                    top="0"
+                    left="0"
+                    right="0"
+                    bottom="0"
+                    bg="blackAlpha.200"
+                    zIndex={1}
+                  />
                   {/* Mock Recipe Card */}
-                  <VStack spacing={4} p={6} h="full" justify="center">
-                    <Icon as={FaUtensils} w={16} h={16} color="green.500" />
-                    <VStack spacing={2}>
-                      <Text fontWeight="bold" fontSize="lg" color="gray.800">
-                        Mediterranean Chicken
-                      </Text>
-                      <Text fontSize="sm" color="gray.600" textAlign="center">
-                        AI-recommended based on your preferences
-                      </Text>
+                  <Box
+                    position="absolute"
+                    top="50%"
+                    left="50%"
+                    transform="translate(-50%, -50%)"
+                    bg="whiteAlpha.900"
+                    backdropFilter="blur(10px)"
+                    borderRadius="2xl"
+                    p={6}
+                    boxShadow="xl"
+                    border="1px solid"
+                    borderColor="whiteAlpha.300"
+                    zIndex={2}
+                    minW="280px"
+                  >
+                    <VStack spacing={4}>
+                      <Icon as={FaUtensils} w={16} h={16} color="green.500" />
+                      <VStack spacing={2}>
+                        <Text fontWeight="bold" fontSize="lg" color="gray.800">
+                          Mediterranean Chicken
+                        </Text>
+                        <Text fontSize="sm" color="gray.600" textAlign="center">
+                          AI-recommended based on your preferences
+                        </Text>
+                      </VStack>
+                      <HStack spacing={2}>
+                        <Badge colorScheme="green" variant="subtle">Italian</Badge>
+                        <Badge colorScheme="blue" variant="subtle">30 min</Badge>
+                      </HStack>
                     </VStack>
-                    <HStack spacing={2}>
-                      <Badge colorScheme="green" variant="subtle">Italian</Badge>
-                      <Badge colorScheme="blue" variant="subtle">30 min</Badge>
-                    </HStack>
-                  </VStack>
+                  </Box>
                   
                   {/* Floating Elements */}
                   <Box
@@ -206,6 +235,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartCooking }) => {
                     p={3}
                     boxShadow="lg"
                     animation="float 3s ease-in-out infinite"
+                    zIndex={3}
                   >
                     <Icon as={FaBrain} color="green.500" />
                   </Box>
@@ -218,6 +248,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartCooking }) => {
                     p={3}
                     boxShadow="lg"
                     animation="float 3s ease-in-out infinite 1.5s"
+                    zIndex={3}
                   >
                     <Icon as={FaGlobe} color="blue.500" />
                   </Box>

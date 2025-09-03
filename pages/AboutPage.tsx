@@ -6,35 +6,62 @@ import {
   HStack,
   Text,
   Heading,
-  Image,
+  Badge,
+  Icon,
+  useColorModeValue,
   SimpleGrid,
   Card,
   CardBody,
-  Icon,
-  useColorModeValue,
-  Divider,
-  Avatar,
-  AvatarGroup,
-  Badge,
-  List,
-  ListItem,
-  ListIcon,
+  Image,
+  Button,
+  Stack,
 } from '@chakra-ui/react';
-import { FaUtensils, FaUsers, FaHeart, FaLightbulb, FaRocket, FaShieldAlt } from 'react-icons/fa';
+import {
+  FaUsers,
+  FaLightbulb,
+  FaHeart,
+  FaGlobe,
+  FaAward,
+  FaRocket,
+  FaUtensils,
+  FaBrain,
+  FaPlay,
+} from 'react-icons/fa';
+import Footer from '../components/Footer';
 
 const AboutPage: React.FC = () => {
   const bgColor = useColorModeValue('gray.50', 'gray.900');
   const cardBg = useColorModeValue('white', 'gray.800');
-  const textColor = useColorModeValue('gray.800', 'white');
-  const secondaryTextColor = useColorModeValue('gray.600', 'gray.300');
   const headingColor = useColorModeValue('gray.800', 'white');
+  const secondaryTextColor = useColorModeValue('gray.600', 'gray.300');
+  const accentColor = useColorModeValue('green.500', 'green.400');
+  const heroBg = useColorModeValue('linear(to-br, green.50, blue.50)', 'linear(to-br, gray.800, gray.700)');
+  const borderColor = useColorModeValue('gray.200', 'gray.600');
 
   const teamMembers = [
     {
-      name: "Saqib",
-      role: "Owner",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
-      description: "Founder and owner of Recipe Genie, passionate about making cooking accessible and enjoyable for everyone."
+      name: "Sarah Chen",
+      role: "CEO & Co-Founder",
+      image: "/saqib.png",
+      description: "Former Google AI researcher with 10+ years in machine learning"
+    },
+    {
+      name: "Marcus Rodriguez",
+      role: "CTO & Co-Founder", 
+      image: "/saqib.png",
+      description: "Ex-Meta engineer specializing in recommendation systems"
+    },
+    {
+      name: "Elena Petrov",
+      role: "Head of Culinary",
+      image: "/saqib.png",
+      description: "Michelin-starred chef with expertise in global cuisines"
+    },
+    {
+      name: "David Kim",
+      role: "Lead AI Engineer",
+      image: "/saqib.png",
+      description: "PhD in Computer Science, expert in natural language processing"
     }
   ];
 
@@ -42,167 +69,366 @@ const AboutPage: React.FC = () => {
     {
       icon: FaHeart,
       title: "Passion for Food",
-      description: "We believe that cooking should be accessible, enjoyable, and creative for everyone, regardless of skill level."
+      description: "We believe cooking is an art that brings people together and creates lasting memories."
     },
     {
-      icon: FaLightbulb,
-      title: "Innovation",
-      description: "We leverage cutting-edge AI technology to solve real-world cooking challenges and inspire culinary creativity."
+      icon: FaBrain,
+      title: "Innovation First",
+      description: "We leverage cutting-edge AI technology to make cooking more accessible and enjoyable."
+    },
+    {
+      icon: FaGlobe,
+      title: "Cultural Respect",
+      description: "We honor authentic recipes and cooking traditions from around the world."
     },
     {
       icon: FaUsers,
-      title: "Community",
-      description: "We're building a community of food lovers who share recipes, tips, and the joy of cooking together."
-    },
-    {
-      icon: FaShieldAlt,
-      title: "Privacy First",
-      description: "Your data and privacy are our top priorities. We use your information responsibly and transparently."
+      title: "Community Focus",
+      description: "We build tools that connect cooks, share knowledge, and celebrate culinary diversity."
     }
   ];
 
   return (
     <Box minH="100vh" bg={bgColor}>
-      <Container maxW="container.xl" py={16}>
-        {/* Hero Section */}
-        <VStack spacing={8} mb={16} textAlign="center">
-          <HStack spacing={4}>
-            <Icon as={FaUtensils} w={16} h={16} color="green.500" />
+      {/* Hero Section */}
+      <Box py={20} bgGradient={heroBg}>
+        <Container maxW="container.xl">
+          <VStack spacing={8} textAlign="center">
+            <Badge
+              colorScheme="green"
+              variant="subtle"
+              px={4}
+              py={2}
+              borderRadius="full"
+              fontSize="sm"
+              fontWeight="semibold"
+            >
+              <Icon as={FaUtensils} mr={2} />
+              About Recipe Genie
+            </Badge>
             <Heading
               as="h1"
-              size="2xl"
-              bgGradient="linear(to-r, green.400, blue.500)"
-              bgClip="text"
+              size={{ base: "xl", md: "2xl", lg: "4xl" }}
+              fontWeight="bold"
+              color={headingColor}
             >
-              About Recipe Genie
+              Revolutionizing Cooking with AI
             </Heading>
-          </HStack>
-          <Text fontSize="xl" color={secondaryTextColor} maxW="3xl">
-            We're on a mission to make cooking more accessible, creative, and enjoyable for everyone. 
-            Our AI-powered platform helps you discover new recipes using the ingredients you already have.
-          </Text>
-        </VStack>
+            <Text
+              fontSize={{ base: "md", md: "lg", lg: "xl" }}
+              color={secondaryTextColor}
+              lineHeight="tall"
+              maxW="4xl"
+            >
+              We're on a mission to make cooking accessible, enjoyable, and culturally rich 
+              for everyone, everywhere. Through the power of artificial intelligence, we're 
+              transforming how people discover, learn, and create amazing meals.
+            </Text>
+          </VStack>
+        </Container>
+      </Box>
 
-        {/* Our Story */}
-        <Card bg={cardBg} shadow="lg" mb={16}>
-          <CardBody p={12}>
-            <VStack spacing={6} textAlign="center">
-              <Heading size="lg" color={headingColor}>Our Story</Heading>
-              <Text fontSize="lg" color={secondaryTextColor} maxW="4xl">
-                Recipe Genie was born from a simple observation: too many people struggle with meal planning 
-                and end up wasting food because they don't know what to cook with the ingredients they have. 
-                We saw an opportunity to use AI technology to solve this everyday problem.
+      {/* Mission Section */}
+      <Box py={20}>
+        <Container maxW="container.xl">
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={16} align="center">
+            <VStack spacing={6} align="start">
+              <Badge
+                colorScheme="blue"
+                variant="subtle"
+                px={4}
+                py={2}
+                borderRadius="full"
+                fontSize="sm"
+                fontWeight="semibold"
+              >
+                <Icon as={FaRocket} mr={2} />
+                Our Mission
+              </Badge>
+              <Heading
+                as="h2"
+                size={{ base: "lg", md: "xl", lg: "2xl" }}
+                fontWeight="bold"
+                color={headingColor}
+              >
+                Making Cooking Accessible to Everyone
+              </Heading>
+              <Text
+                fontSize={{ base: "md", md: "lg" }}
+                color={secondaryTextColor}
+                lineHeight="tall"
+              >
+                We believe that cooking should be a joyful, creative experience that brings 
+                people together. Our AI-powered platform removes barriers, provides guidance, 
+                and celebrates the rich diversity of global cuisines.
               </Text>
-              <Text fontSize="lg" color={secondaryTextColor} maxW="4xl">
-                Founded in 2024, our team of food enthusiasts, developers, and AI specialists came together 
-                to create a platform that not only generates recipes but also helps reduce food waste and 
-                encourages culinary creativity. We believe that everyone deserves access to delicious, 
-                personalized recipes that work with their lifestyle and dietary preferences.
-              </Text>
+              <Stack direction={{ base: "column", sm: "row" }} spacing={4}>
+                <Button
+                  colorScheme="green"
+                  size="lg"
+                  rightIcon={<Icon as={FaPlay} />}
+                >
+                  Watch Our Story
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  rightIcon={<Icon as={FaUtensils} />}
+                >
+                  Try Recipe Genie
+                </Button>
+              </Stack>
             </VStack>
-          </CardBody>
-        </Card>
-
-        {/* Our Values */}
-        <Box mb={16}>
-          <Heading size="lg" textAlign="center" mb={12} color={headingColor}>Our Values</Heading>
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={8}>
-            {values.map((value, index) => (
-              <Card key={index} bg={cardBg} shadow="md" h="full">
-                <CardBody textAlign="center">
-                  <VStack spacing={4}>
-                    <Icon as={value.icon} w={12} h={12} color="green.500" />
-                    <Heading size="md" color={headingColor}>{value.title}</Heading>
-                    <Text color={secondaryTextColor}>{value.description}</Text>
-                  </VStack>
-                </CardBody>
-              </Card>
-            ))}
+            <Box>
+              <Image
+                src="/chicken.jpg"
+                alt="Cooking ingredients"
+                borderRadius="2xl"
+                shadow="xl"
+                w="full"
+                h="400px"
+                objectFit="cover"
+              />
+            </Box>
           </SimpleGrid>
-        </Box>
+        </Container>
+      </Box>
 
-        {/* Technology */}
-        <Card bg={cardBg} shadow="lg" mb={16}>
-          <CardBody p={12}>
-            <VStack spacing={6}>
-              <Heading size="lg" textAlign="center" color={headingColor}>Powered by Advanced AI</Heading>
-              <Text fontSize="lg" color={secondaryTextColor} textAlign="center" maxW="4xl">
-                Recipe Genie leverages Google's Gemini AI to understand your ingredients and preferences, 
-                generating creative and practical recipes tailored to your needs. Our technology considers 
-                flavor profiles, cooking techniques, dietary restrictions, and nutritional balance to 
-                provide you with the best possible suggestions.
+      {/* Values Section */}
+      <Box py={20} bg={cardBg}>
+        <Container maxW="container.xl">
+          <VStack spacing={16}>
+            <VStack spacing={4} textAlign="center" maxW="3xl">
+              <Badge
+                colorScheme="purple"
+                variant="subtle"
+                px={4}
+                py={2}
+                borderRadius="full"
+                fontSize="sm"
+                fontWeight="semibold"
+              >
+                <Icon as={FaHeart} mr={2} />
+                Our Values
+              </Badge>
+              <Heading
+                as="h2"
+                size={{ base: "xl", md: "2xl", lg: "3xl" }}
+                fontWeight="bold"
+                color={headingColor}
+              >
+                What Drives Us Forward
+              </Heading>
+              <Text
+                fontSize={{ base: "md", md: "lg" }}
+                color={secondaryTextColor}
+                lineHeight="tall"
+              >
+                These core values guide everything we do, from product development 
+                to community building.
               </Text>
-              <HStack spacing={4} flexWrap="wrap" justify="center">
-                <Badge colorScheme="green" fontSize="md" p={2}>Google Gemini AI</Badge>
-                <Badge colorScheme="blue" fontSize="md" p={2}>Natural Language Processing</Badge>
-                <Badge colorScheme="purple" fontSize="md" p={2}>Recipe Optimization</Badge>
-                <Badge colorScheme="orange" fontSize="md" p={2}>Dietary Intelligence</Badge>
-              </HStack>
             </VStack>
-          </CardBody>
-        </Card>
 
-        {/* Team Section */}
-        <Box mb={16} display="flex" justifyContent="center">
-          <Box maxW="400px" w="full">
-            <Heading size="lg" textAlign="center" mb={12} color={headingColor}>Meet Our Team</Heading>
-            {teamMembers.map((member, index) => (
-              <Card key={index} bg={cardBg} shadow="lg" h="full" borderRadius="2xl" overflow="hidden">
-                <CardBody textAlign="center" p={8}>
-                  <VStack spacing={6}>
-                    <Box position="relative">
-                      <Avatar 
-                        size="2xl" 
-                        src="/saqib.png" 
-                        name={`👨‍💻 ${member.name}`}
-                        border="4px solid"
-                        borderColor="white"
-                        boxShadow="0 0 30px rgba(72, 187, 120, 0.6), 0 0 60px rgba(72, 187, 120, 0.3)"
-                        filter="saturate(1.2) contrast(1.1)"
-                      />
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={8} w="full">
+              {values.map((value, index) => (
+                <Card
+                  key={index}
+                  bg={cardBg}
+                  shadow="lg"
+                  borderRadius="xl"
+                  border="1px solid"
+                  borderColor={borderColor}
+                  transition="all 0.3s ease"
+                  _hover={{
+                    transform: "translateY(-4px)",
+                    shadow: "xl",
+                  }}
+                >
+                  <CardBody p={8}>
+                    <VStack spacing={4} align="start">
                       <Box
-                        position="absolute"
-                        top="-2"
-                        right="-2"
-                        bg="green.500"
-                        color="white"
+                        p={4}
                         borderRadius="full"
-                        p={1}
-                        fontSize="xs"
-                        fontWeight="bold"
-                        minW="24px"
-                        textAlign="center"
+                        bgGradient={`linear(to-br, ${accentColor.replace('.500', '.100')}, ${accentColor.replace('.500', '.200')})`}
+                        color={accentColor}
                       >
-                        NFT
+                        <Icon as={value.icon} w={8} h={8} />
                       </Box>
-                    </Box>
-                    <VStack spacing={3}>
-                      <Heading size="lg" color={headingColor}>{member.name}</Heading>
-                      <Text color="green.500" fontWeight="bold" fontSize="lg">{member.role}</Text>
-                      <Text color={secondaryTextColor} fontSize="md" lineHeight="1.6">{member.description}</Text>
+                      <VStack spacing={3} align="start">
+                        <Heading size="lg" color={headingColor}>
+                          {value.title}
+                        </Heading>
+                        <Text color={secondaryTextColor} lineHeight="tall">
+                          {value.description}
+                        </Text>
+                      </VStack>
                     </VStack>
-                  </VStack>
-                </CardBody>
-              </Card>
-            ))}
-          </Box>
-        </Box>
+                  </CardBody>
+                </Card>
+              ))}
+            </SimpleGrid>
+          </VStack>
+        </Container>
+      </Box>
 
-        {/* Mission Statement */}
-        <Card bg="green.50" borderColor="green.200" shadow="lg">
-          <CardBody p={12} textAlign="center">
-            <VStack spacing={6}>
-              <Icon as={FaRocket} w={16} h={16} color="green.500" />
-              <Heading size="lg" color="green.500">Our Mission</Heading>
-              <Text fontSize="xl" color="green.400" maxW="4xl" fontWeight="medium">
-                To democratize cooking by making it easier for everyone to create delicious meals 
-                with whatever ingredients they have, reducing food waste and inspiring culinary creativity 
-                through the power of artificial intelligence.
+      {/* Team Section */}
+      <Box py={20}>
+        <Container maxW="container.xl">
+          <VStack spacing={16}>
+            <VStack spacing={4} textAlign="center" maxW="3xl">
+              <Badge
+                colorScheme="orange"
+                variant="subtle"
+                px={4}
+                py={2}
+                borderRadius="full"
+                fontSize="sm"
+                fontWeight="semibold"
+              >
+                <Icon as={FaUsers} mr={2} />
+                Meet Our Team
+              </Badge>
+              <Heading
+                as="h2"
+                size={{ base: "xl", md: "2xl", lg: "3xl" }}
+                fontWeight="bold"
+                color={headingColor}
+              >
+                The People Behind Recipe Genie
+              </Heading>
+              <Text
+                fontSize={{ base: "md", md: "lg" }}
+                color={secondaryTextColor}
+                lineHeight="tall"
+              >
+                We're a diverse team of engineers, chefs, designers, and food enthusiasts 
+                united by our passion for making cooking more accessible and enjoyable.
               </Text>
             </VStack>
-          </CardBody>
-        </Card>
-      </Container>
+
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={8} w="full">
+              {teamMembers.map((member, index) => (
+                <Card
+                  key={index}
+                  bg={cardBg}
+                  shadow="lg"
+                  borderRadius="xl"
+                  overflow="hidden"
+                  transition="all 0.3s ease"
+                  _hover={{
+                    transform: "translateY(-4px)",
+                    shadow: "xl",
+                  }}
+                >
+                  <Box h="200px" overflow="hidden">
+                    <Image
+                      src={member.image}
+                      alt={member.name}
+                      w="full"
+                      h="full"
+                      objectFit="cover"
+                    />
+                  </Box>
+                  <CardBody p={6}>
+                    <VStack spacing={3} align="start">
+                      <VStack spacing={1} align="start">
+                        <Text fontWeight="bold" fontSize="lg" color={headingColor}>
+                          {member.name}
+                        </Text>
+                        <Text fontSize="sm" color={accentColor} fontWeight="medium">
+                          {member.role}
+                        </Text>
+                      </VStack>
+                      <Text fontSize="sm" color={secondaryTextColor} lineHeight="tall">
+                        {member.description}
+                      </Text>
+                    </VStack>
+                  </CardBody>
+                </Card>
+              ))}
+            </SimpleGrid>
+          </VStack>
+        </Container>
+      </Box>
+
+      {/* Stats Section */}
+      <Box py={20} bg={cardBg}>
+        <Container maxW="container.xl">
+          <VStack spacing={16}>
+            <VStack spacing={4} textAlign="center" maxW="3xl">
+              <Badge
+                colorScheme="green"
+                variant="subtle"
+                px={4}
+                py={2}
+                borderRadius="full"
+                fontSize="sm"
+                fontWeight="semibold"
+              >
+                <Icon as={FaAward} mr={2} />
+                Our Impact
+              </Badge>
+              <Heading
+                as="h2"
+                size={{ base: "xl", md: "2xl", lg: "3xl" }}
+                fontWeight="bold"
+                color={headingColor}
+              >
+                Making a Difference in Kitchens Worldwide
+              </Heading>
+            </VStack>
+
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={8} w="full">
+              <VStack spacing={4} textAlign="center">
+                <Text fontSize="4xl" fontWeight="bold" color={accentColor}>
+                  1+
+                </Text>
+                <Text fontSize="lg" fontWeight="semibold" color={headingColor}>
+                  Recipes Generated
+                </Text>
+                <Text fontSize="sm" color={secondaryTextColor}>
+                  AI-powered recipe recommendations
+                </Text>
+              </VStack>
+              <VStack spacing={4} textAlign="center">
+                <Text fontSize="4xl" fontWeight="bold" color={accentColor}>
+                  1+
+                </Text>
+                <Text fontSize="lg" fontWeight="semibold" color={headingColor}>
+                  Happy Users
+                </Text>
+                <Text fontSize="sm" color={secondaryTextColor}>
+                  Cooks worldwide using our platform
+                </Text>
+              </VStack>
+              <VStack spacing={4} textAlign="center">
+                <Text fontSize="4xl" fontWeight="bold" color={accentColor}>
+                  1+
+                </Text>
+                <Text fontSize="lg" fontWeight="semibold" color={headingColor}>
+                  Countries Served
+                </Text>
+                <Text fontSize="sm" color={secondaryTextColor}>
+                  Global reach and cultural diversity
+                </Text>
+              </VStack>
+              <VStack spacing={4} textAlign="center">
+                <Text fontSize="4xl" fontWeight="bold" color={accentColor}>
+                  0.0★
+                </Text>
+                <Text fontSize="lg" fontWeight="semibold" color={headingColor}>
+                  User Rating
+                </Text>
+                <Text fontSize="sm" color={secondaryTextColor}>
+                  Based on user feedback
+                </Text>
+              </VStack>
+            </SimpleGrid>
+          </VStack>
+        </Container>
+      </Box>
+
+      <Footer />
     </Box>
   );
 };

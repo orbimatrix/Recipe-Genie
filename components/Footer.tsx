@@ -190,28 +190,7 @@ const Footer: React.FC = () => {
           </VStack>
 
           {/* Contact Section */}
-          <VStack spacing={6} align="start">
-            <Text fontSize="lg" fontWeight="bold" color={headingColor}>
-              Contact
-            </Text>
-            <VStack spacing={4} align="start">
-              <HStack spacing={3}>
-                <Icon as={FaEnvelope} w={4} h={4} color="green.400" />
-                <Text fontSize="sm" color={textColor}>hello@recipegenie.com</Text>
-              </HStack>
-              <HStack spacing={3}>
-                <Icon as={FaPhone} w={4} h={4} color="green.400" />
-                <Text fontSize="sm" color={textColor}>+1 (555) 123-4567</Text>
-              </HStack>
-              <HStack spacing={3} align="start">
-                <Icon as={FaMapMarkerAlt} w={4} h={4} color="green.400" mt={0.5} />
-                <Text fontSize="sm" color={textColor}>
-                  123 Culinary Street<br />
-                  Food City, FC 12345
-                </Text>
-              </HStack>
-            </VStack>
-          </VStack>
+         
         </SimpleGrid>
 
         <Divider borderColor={borderColor} my={12} />
