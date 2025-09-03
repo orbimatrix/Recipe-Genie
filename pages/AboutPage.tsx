@@ -40,28 +40,10 @@ const AboutPage: React.FC = () => {
 
   const teamMembers = [
     {
-      name: "Sarah Chen",
-      role: "CEO & Co-Founder",
+      name: "Saqib",
+      role: "Owner & Founder",
       image: "/saqib.png",
-      description: "Former Google AI researcher with 10+ years in machine learning"
-    },
-    {
-      name: "Marcus Rodriguez",
-      role: "CTO & Co-Founder", 
-      image: "/saqib.png",
-      description: "Ex-Meta engineer specializing in recommendation systems"
-    },
-    {
-      name: "Elena Petrov",
-      role: "Head of Culinary",
-      image: "/saqib.png",
-      description: "Michelin-starred chef with expertise in global cuisines"
-    },
-    {
-      name: "David Kim",
-      role: "Lead AI Engineer",
-      image: "/saqib.png",
-      description: "PhD in Computer Science, expert in natural language processing"
+      description: "Passionate developer and entrepreneur dedicated to revolutionizing cooking with AI technology"
     }
   ];
 
@@ -286,7 +268,7 @@ const AboutPage: React.FC = () => {
                 fontWeight="semibold"
               >
                 <Icon as={FaUsers} mr={2} />
-                Meet Our Team
+                Meet the Founder
               </Badge>
               <Heading
                 as="h2"
@@ -294,19 +276,19 @@ const AboutPage: React.FC = () => {
                 fontWeight="bold"
                 color={headingColor}
               >
-                The People Behind Recipe Genie
+                Meet the Founder
               </Heading>
               <Text
                 fontSize={{ base: "md", md: "lg" }}
                 color={secondaryTextColor}
                 lineHeight="tall"
               >
-                We're a diverse team of engineers, chefs, designers, and food enthusiasts 
-                united by our passion for making cooking more accessible and enjoyable.
+                The passionate developer and entrepreneur behind Recipe Genie, 
+                dedicated to making cooking more accessible and enjoyable for everyone.
               </Text>
             </VStack>
 
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={8} w="full">
+            <SimpleGrid columns={1} spacing={8} w="full" maxW="md" mx="auto">
               {teamMembers.map((member, index) => (
                 <Card
                   key={index}
@@ -320,13 +302,14 @@ const AboutPage: React.FC = () => {
                     shadow: "xl",
                   }}
                 >
-                  <Box h="200px" overflow="hidden">
+                  <Box h="250px" overflow="hidden">
                     <Image
                       src={member.image}
                       alt={member.name}
                       w="full"
                       h="full"
-                      objectFit="cover"
+                      objectFit="contain"
+                      objectPosition="center"
                     />
                   </Box>
                   <CardBody p={6}>
