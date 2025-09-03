@@ -5,6 +5,61 @@ const theme = extendTheme({
     initialColorMode: 'system',
     useSystemColorMode: true,
   },
+  styles: {
+    global: (props: any) => ({
+      body: {
+        bg: props.colorMode === 'dark' ? 'gray.900' : 'gray.50',
+        color: props.colorMode === 'dark' ? 'white' : 'gray.800',
+      },
+      '*': {
+        color: props.colorMode === 'dark' ? 'white' : 'gray.800',
+      },
+      'h1, h2, h3, h4, h5, h6': {
+        color: props.colorMode === 'dark' ? 'white' : 'gray.800',
+      },
+      'p, span, div': {
+        color: props.colorMode === 'dark' ? 'gray.200' : 'gray.700',
+      },
+      '@keyframes float': {
+        '0%, 100%': {
+          transform: 'translateY(0px)',
+        },
+        '50%': {
+          transform: 'translateY(-10px)',
+        },
+      },
+      '@keyframes fadeInUp': {
+        '0%': {
+          opacity: '0',
+          transform: 'translateY(30px)',
+        },
+        '100%': {
+          opacity: '1',
+          transform: 'translateY(0)',
+        },
+      },
+      '@keyframes slideInLeft': {
+        '0%': {
+          opacity: '0',
+          transform: 'translateX(-30px)',
+        },
+        '100%': {
+          opacity: '1',
+          transform: 'translateX(0)',
+        },
+      },
+      '@keyframes slideInRight': {
+        '0%': {
+          opacity: '0',
+          transform: 'translateX(30px)',
+        },
+        '100%': {
+          opacity: '1',
+          transform: 'translateX(0)',
+        },
+      },
+    }),
+  },
   colors: {
     brand: {
       50: '#f0fdf4',
@@ -23,23 +78,7 @@ const theme = extendTheme({
     heading: 'Inter, system-ui, sans-serif',
     body: 'Inter, system-ui, sans-serif',
   },
-  styles: {
-    global: (props: any) => ({
-      body: {
-        bg: props.colorMode === 'dark' ? 'gray.900' : 'gray.50',
-        color: props.colorMode === 'dark' ? 'white' : 'gray.800',
-      },
-      '*': {
-        color: props.colorMode === 'dark' ? 'white' : 'gray.800',
-      },
-      'h1, h2, h3, h4, h5, h6': {
-        color: props.colorMode === 'dark' ? 'white' : 'gray.800',
-      },
-      'p, span, div': {
-        color: props.colorMode === 'dark' ? 'gray.200' : 'gray.700',
-      },
-    }),
-  },
+
   components: {
     Button: {
       baseStyle: (props: any) => ({
