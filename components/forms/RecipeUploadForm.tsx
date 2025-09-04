@@ -165,21 +165,23 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
       onSave(recipe);
       toast({
         title: isEditing ? "Recipe Updated!" : "Recipe Saved!",
-        description: `${recipe.recipeName} has been ${isEditing ? 'updated' : 'saved'} to your collection.`,
+        description: `${recipe.recipeName} has been ${isEditing ? 'updated' : 'saved'}.`,
         status: "success",
-        duration: 3000,
+        duration: 2000,
         isClosable: true,
+        position: "top-right",
+        variant: "subtle",
       });
     }
   };
 
   return (
-    <Card bg={cardBg} shadow="xl" borderRadius="2xl" maxW="4xl" mx="auto">
-      <CardBody p={8}>
-        <VStack spacing={8} align="stretch">
+    <Card bg={cardBg} shadow="xl" borderRadius={{ base: "none", sm: "2xl" }} maxW="2xl" mx="auto" h="full">
+      <CardBody p={{ base: 4, sm: 5, md: 6 }}>
+        <VStack spacing={{ base: 4, md: 6 }} align="stretch">
           {/* Header */}
-          <Flex justify="space-between" align="center">
-            <Heading size="lg" color={headingColor}>
+          <Flex justify="space-between" align="center" wrap="wrap" gap={4}>
+            <Heading size={{ base: "md", sm: "lg" }} color={headingColor}>
               {isEditing ? 'Edit Recipe' : 'Add New Recipe'}
             </Heading>
             <IconButton
@@ -187,16 +189,17 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
               icon={<Icon as={FaTimes} />}
               variant="ghost"
               onClick={onCancel}
+              size="sm"
             />
           </Flex>
 
           <Divider />
 
           {/* Basic Information */}
-          <VStack spacing={6} align="stretch">
-            <Heading size="md" color={headingColor}>Basic Information</Heading>
+          <VStack spacing={{ base: 3, md: 4 }} align="stretch">
+            <Heading size={{ base: "sm", md: "md" }} color={headingColor}>Basic Information</Heading>
             
-            <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={6}>
+            <Grid templateColumns={{ base: "1fr", sm: "1fr 1fr" }} gap={{ base: 3, md: 4 }}>
               <FormControl isInvalid={!!errors.recipeName}>
                 <FormLabel>Recipe Name *</FormLabel>
                 <Input
@@ -233,13 +236,13 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 placeholder="Describe your recipe..."
-                h={24}
+                h={{ base: 20, md: 24 }}
                 resize="vertical"
               />
               <FormErrorMessage>{errors.description}</FormErrorMessage>
             </FormControl>
 
-            <Grid templateColumns={{ base: "1fr", md: "1fr 1fr 1fr" }} gap={6}>
+            <Grid templateColumns={{ base: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" }} gap={{ base: 3, md: 4 }}>
               <FormControl>
                 <FormLabel>Prep Time</FormLabel>
                 <Input
@@ -275,7 +278,7 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
               </FormControl>
             </Grid>
 
-            <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={6}>
+            <Grid templateColumns={{ base: "1fr", sm: "1fr 1fr" }} gap={{ base: 3, md: 4 }}>
               <FormControl>
                 <FormLabel>Difficulty</FormLabel>
                 <Select
@@ -302,16 +305,18 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
           <Divider />
 
           {/* Image Upload */}
-          <VStack spacing={4} align="stretch">
-            <Heading size="md" color={headingColor}>Recipe Image</Heading>
+          <VStack spacing={{ base: 3, md: 4 }} align="stretch">
+            <Heading size={{ base: "sm", md: "md" }} color={headingColor}>Recipe Image</Heading>
             
             {formData.image ? (
-              <Box position="relative" maxW="300px" mx="auto">
+              <Box position="relative" maxW={{ base: "250px", sm: "300px" }} mx="auto">
                 <Image
                   src={formData.image}
                   alt="Recipe preview"
                   borderRadius="lg"
                   boxShadow="md"
+                  w="full"
+                  h="auto"
                 />
                 <IconButton
                   aria-label="Remove image"
@@ -330,14 +335,14 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
                 border="2px dashed"
                 borderColor={borderColor}
                 borderRadius="lg"
-                p={8}
+                p={{ base: 6, md: 8 }}
                 textAlign="center"
                 cursor="pointer"
                 _hover={{ borderColor: 'green.400' }}
                 onClick={() => document.getElementById('image-upload')?.click()}
               >
-                <Icon as={FaImage} w={12} h={12} color={secondaryTextColor} mb={4} />
-                <Text color={secondaryTextColor}>Click to upload recipe image</Text>
+                <Icon as={FaImage} w={{ base: 8, md: 12 }} h={{ base: 8, md: 12 }} color={secondaryTextColor} mb={4} />
+                <Text color={secondaryTextColor} fontSize={{ base: "sm", md: "md" }}>Click to upload recipe image</Text>
                 <Input
                   id="image-upload"
                   type="file"
@@ -352,8 +357,8 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
           <Divider />
 
           {/* Ingredients */}
-          <VStack spacing={4} align="stretch">
-            <Heading size="md" color={headingColor}>Ingredients</Heading>
+          <VStack spacing={{ base: 3, md: 4 }} align="stretch">
+            <Heading size={{ base: "sm", md: "md" }} color={headingColor}>Ingredients</Heading>
             
             <VStack spacing={3} align="stretch">
               {formData.ingredients.map((ingredient, index) => (
@@ -382,18 +387,21 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
               ))}
             </VStack>
 
-            <HStack spacing={3}>
+            <HStack spacing={3} wrap="wrap">
               <Input
                 value={newIngredient}
                 onChange={(e) => setNewIngredient(e.target.value)}
                 placeholder="Add new ingredient"
                 onKeyPress={(e) => e.key === 'Enter' && addIngredient()}
+                flex={1}
+                minW="200px"
               />
               <Button
                 leftIcon={<Icon as={FaPlus} />}
                 onClick={addIngredient}
                 colorScheme="green"
                 variant="outline"
+                size={{ base: "sm", md: "md" }}
               >
                 Add
               </Button>
@@ -407,8 +415,8 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
           <Divider />
 
           {/* Instructions */}
-          <VStack spacing={4} align="stretch">
-            <Heading size="md" color={headingColor}>Instructions</Heading>
+          <VStack spacing={{ base: 3, md: 4 }} align="stretch">
+            <Heading size={{ base: "sm", md: "md" }} color={headingColor}>Instructions</Heading>
             
             <VStack spacing={3} align="stretch">
               {formData.instructions.map((instruction, index) => (
@@ -440,7 +448,7 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
               ))}
             </VStack>
 
-            <HStack spacing={3} align="start">
+            <VStack spacing={3} align="stretch">
               <Textarea
                 value={newInstruction}
                 onChange={(e) => setNewInstruction(e.target.value)}
@@ -453,11 +461,12 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
                 onClick={addInstruction}
                 colorScheme="green"
                 variant="outline"
-                mt={2}
+                size={{ base: "sm", md: "md" }}
+                alignSelf="flex-start"
               >
                 Add
               </Button>
-            </HStack>
+            </VStack>
             
             {errors.instructions && (
               <Text color="red.500" fontSize="sm">{errors.instructions}</Text>
@@ -467,8 +476,8 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
           <Divider />
 
           {/* Tags */}
-          <VStack spacing={4} align="stretch">
-            <Heading size="md" color={headingColor}>Tags</Heading>
+          <VStack spacing={{ base: 3, md: 4 }} align="stretch">
+            <Heading size={{ base: "sm", md: "md" }} color={headingColor}>Tags</Heading>
             
             <HStack spacing={2} wrap="wrap">
               {formData.tags.map((tag, index) => (
@@ -493,18 +502,21 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
               ))}
             </HStack>
 
-            <HStack spacing={3}>
+            <HStack spacing={3} wrap="wrap">
               <Input
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
                 placeholder="Add tag (e.g., vegetarian, quick, healthy)"
                 onKeyPress={(e) => e.key === 'Enter' && addTag()}
+                flex={1}
+                minW="200px"
               />
               <Button
                 leftIcon={<Icon as={FaPlus} />}
                 onClick={addTag}
                 colorScheme="green"
                 variant="outline"
+                size={{ base: "sm", md: "md" }}
               >
                 Add
               </Button>
@@ -514,15 +526,15 @@ const RecipeUploadForm: React.FC<RecipeUploadFormProps> = ({
           <Divider />
 
           {/* Actions */}
-          <HStack spacing={4} justify="flex-end">
-            <Button variant="outline" onClick={onCancel}>
+          <HStack spacing={4} justify="flex-end" wrap="wrap">
+            <Button variant="outline" onClick={onCancel} size={{ base: "md", md: "lg" }}>
               Cancel
             </Button>
             <Button
               leftIcon={<Icon as={FaSave} />}
               onClick={handleSubmit}
               colorScheme="green"
-              size="lg"
+              size={{ base: "md", md: "lg" }}
             >
               {isEditing ? 'Update Recipe' : 'Save Recipe'}
             </Button>

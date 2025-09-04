@@ -73,10 +73,12 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
       onSave(recipe);
       toast({
         title: "Recipe Saved!",
-        description: `${recipe.recipeName} has been added to your saved recipes.`,
+        description: `${recipe.recipeName} added to collection.`,
         status: "success",
-        duration: 2000,
+        duration: 1500,
         isClosable: true,
+        position: "top-right",
+        variant: "subtle",
       });
     }
   };
@@ -104,10 +106,12 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
         setIsLinkCopied(true);
         toast({
           title: "Link Copied!",
-          description: "Recipe link has been copied to clipboard.",
+          description: "Recipe link copied to clipboard.",
           status: "success",
-          duration: 2000,
+          duration: 1500,
           isClosable: true,
+          position: "top-right",
+          variant: "subtle",
         });
         setTimeout(() => {
           setIsLinkCopied(false);
@@ -144,10 +148,12 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
             setIsRecipeTextCopied(true);
             toast({
               title: "Recipe Copied!",
-              description: "Full recipe has been copied to clipboard.",
+              description: "Full recipe copied to clipboard.",
               status: "success",
-              duration: 2000,
+              duration: 1500,
               isClosable: true,
+              position: "top-right",
+              variant: "subtle",
             });
             setTimeout(() => {
                 setIsRecipeTextCopied(false);
@@ -158,17 +164,21 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
               title: "Copy Failed",
               description: "Failed to copy recipe to clipboard.",
               status: "error",
-              duration: 3000,
+              duration: 2000,
               isClosable: true,
+              position: "top-right",
+              variant: "subtle",
             });
         }
     } else {
         toast({
           title: "Clipboard Not Available",
-          description: "Clipboard functionality is not available in your browser.",
+          description: "Clipboard functionality not available.",
           status: "warning",
-          duration: 3000,
+          duration: 2000,
           isClosable: true,
+          position: "top-right",
+          variant: "subtle",
         });
     }
   };
@@ -316,9 +326,12 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onSave, onRemove
               {recipe.ingredients.map((ingredient, index) => (
                 <HStack key={index} spacing={3}>
                   <Checkbox
+                    checked={checkedIngredients.has(index)}
                     isChecked={checkedIngredients.has(index)}
                     onChange={() => handleIngredientCheck(index)}
                     colorScheme="green"
+                    defaultChecked={false}
+                    onBlur={() => {}}
                   />
                   <Text 
                     fontSize="sm" 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -12,6 +13,7 @@ import {
   SimpleGrid,
   Card,
   CardBody,
+  CardHeader,
   Image,
   Badge,
   Flex,
@@ -54,6 +56,7 @@ import {
   FaEye,
   FaHeart,
   FaMagic,
+  FaTimes,
 } from 'react-icons/fa';
 import { LoadingSpinner } from '../components/icons/LoadingSpinner';
 import RecipeUploadForm from '../components/forms/RecipeUploadForm';
@@ -71,13 +74,14 @@ interface Recipe {
   cuisine: string;
   ingredients: string[];
   instructions: string[];
-  tags: string[];
+  tags?: string[];
   image?: string;
   createdAt: number;
   updatedAt: number;
 }
 
 const RecipeCollectionPage: React.FC = () => {
+  const navigate = useNavigate();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -86,10 +90,10 @@ const RecipeCollectionPage: React.FC = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
+  // All hooks must be called before any early returns
   const bgColor = useColorModeValue('gray.50', 'gray.900');
   const cardBg = useColorModeValue('white', 'gray.800');
   const headingColor = useColorModeValue('gray.800', 'white');
@@ -115,6 +119,22 @@ const RecipeCollectionPage: React.FC = () => {
     loadRecipes();
   }, []);
 
+  // Reload recipes when page becomes visible (user returns from add-recipe page)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        const savedRecipes = JSON.parse(localStorage.getItem('savedRecipes') || '[]');
+        const userRecipes = JSON.parse(localStorage.getItem('userRecipes') || '[]');
+        const allRecipes = [...savedRecipes, ...userRecipes];
+        setRecipes(allRecipes);
+        setFilteredRecipes(allRecipes);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
   // Filter and search recipes
   useEffect(() => {
     let filtered = recipes;
@@ -127,9 +147,9 @@ const RecipeCollectionPage: React.FC = () => {
         recipe.ingredients.some(ingredient =>
           ingredient.toLowerCase().includes(searchTerm.toLowerCase())
         ) ||
-        recipe.tags.some(tag =>
+        (recipe.tags && recipe.tags.some(tag =>
           tag.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+        ))
       );
     }
 
@@ -162,25 +182,32 @@ const RecipeCollectionPage: React.FC = () => {
     setFilteredRecipes(filtered);
   }, [recipes, searchTerm, categoryFilter, difficultyFilter, sortBy]);
 
-  const handleSaveRecipe = (recipe: Recipe) => {
-    const updatedRecipes = [...recipes, recipe];
-    setRecipes(updatedRecipes);
-    localStorage.setItem('userRecipes', JSON.stringify(updatedRecipes.filter(r => !r.savedAt)));
-    setIsUploadModalOpen(false);
-    setIsEditModalOpen(false);
-  };
 
   const handleEditRecipe = (recipe: Recipe) => {
     const updatedRecipes = recipes.map(r => r.id === recipe.id ? recipe : r);
     setRecipes(updatedRecipes);
-    localStorage.setItem('userRecipes', JSON.stringify(updatedRecipes.filter(r => !r.savedAt)));
+    
+    // Update both localStorage stores
+    const userRecipes = updatedRecipes.filter(r => !r.savedAt);
+    const savedRecipes = updatedRecipes.filter(r => r.savedAt);
+    
+    localStorage.setItem('userRecipes', JSON.stringify(userRecipes));
+    localStorage.setItem('savedRecipes', JSON.stringify(savedRecipes));
+    
     setIsEditModalOpen(false);
+    setSelectedRecipe(null);
   };
 
   const handleDeleteRecipe = (recipeId: string) => {
     const updatedRecipes = recipes.filter(r => r.id !== recipeId);
     setRecipes(updatedRecipes);
-    localStorage.setItem('userRecipes', JSON.stringify(updatedRecipes.filter(r => !r.savedAt)));
+    
+    // Update both localStorage stores
+    const userRecipes = updatedRecipes.filter(r => !r.savedAt);
+    const savedRecipes = updatedRecipes.filter(r => r.savedAt);
+    
+    localStorage.setItem('userRecipes', JSON.stringify(userRecipes));
+    localStorage.setItem('savedRecipes', JSON.stringify(savedRecipes));
   };
 
   const openEditModal = (recipe: Recipe) => {
@@ -235,7 +262,7 @@ const RecipeCollectionPage: React.FC = () => {
               leftIcon={<Icon as={FaPlus} />}
               colorScheme="green"
               size="lg"
-              onClick={() => setIsUploadModalOpen(true)}
+              onClick={() => navigate('/add-recipe')}
             >
               Add Recipe
             </Button>
@@ -323,7 +350,7 @@ const RecipeCollectionPage: React.FC = () => {
                     <Button
                       leftIcon={<Icon as={FaPlus} />}
                       colorScheme="green"
-                      onClick={() => setIsUploadModalOpen(true)}
+                      onClick={() => navigate('/add-recipe')}
                     >
                       Add Your First Recipe
                     </Button>
@@ -372,9 +399,11 @@ const RecipeCollectionPage: React.FC = () => {
                             {recipe.category}
                           </Badge>
                         )}
-                        <Badge colorScheme={getDifficultyColor(recipe.difficulty)} variant="subtle">
-                          {recipe.difficulty}
-                        </Badge>
+                        {recipe.difficulty && (
+                          <Badge colorScheme={getDifficultyColor(recipe.difficulty)} variant="subtle">
+                            {recipe.difficulty}
+                          </Badge>
+                        )}
                         {recipe.cuisine && (
                           <Badge colorScheme="purple" variant="subtle">
                             {recipe.cuisine}
@@ -428,150 +457,158 @@ const RecipeCollectionPage: React.FC = () => {
         </VStack>
       </Container>
 
-      {/* Upload Modal */}
-      <Modal isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} size="6xl">
-        <ModalOverlay />
-        <ModalContent maxH="90vh" overflowY="auto">
-          <ModalCloseButton />
-          <ModalBody p={0}>
-            <RecipeUploadForm
-              onSave={handleSaveRecipe}
-              onCancel={() => setIsUploadModalOpen(false)}
-            />
-          </ModalBody>
-        </ModalContent>
-      </Modal>
 
       {/* Edit Modal */}
-      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} size="6xl">
+      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} size={{ base: "md", sm: "lg", md: "xl", lg: "2xl", xl: "3xl" }}>
         <ModalOverlay />
-        <ModalContent maxH="90vh" overflowY="auto">
-          <ModalCloseButton />
-          <ModalBody p={0}>
-            {selectedRecipe && (
-              <RecipeUploadForm
-                onSave={handleEditRecipe}
-                onCancel={() => setIsEditModalOpen(false)}
-                initialRecipe={selectedRecipe}
-                isEditing={true}
-              />
-            )}
-          </ModalBody>
+        <ModalContent maxH="90vh" overflowY="auto" m={4}>
+          {selectedRecipe && (
+            <RecipeUploadForm
+              onSave={handleEditRecipe}
+              onCancel={() => {
+                setIsEditModalOpen(false);
+                setSelectedRecipe(null);
+              }}
+              initialRecipe={selectedRecipe}
+              isEditing={true}
+            />
+          )}
         </ModalContent>
       </Modal>
 
       {/* View Modal */}
-      <Modal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)} size="4xl">
+      <Modal isOpen={isViewModalOpen} onClose={() => {
+        setIsViewModalOpen(false);
+        setSelectedRecipe(null);
+      }} size={{ base: "md", sm: "lg", md: "xl", lg: "2xl", xl: "3xl" }}>
         <ModalOverlay />
-        <ModalContent maxH="90vh" overflowY="auto">
-          <ModalHeader>
-            {selectedRecipe?.recipeName}
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            {selectedRecipe && (
-              <VStack spacing={6} align="stretch">
-                {selectedRecipe.image && (
-                  <Image
-                    src={selectedRecipe.image}
-                    alt={selectedRecipe.recipeName}
-                    borderRadius="lg"
-                    maxH="300px"
-                    objectFit="cover"
+        <ModalContent maxH="90vh" overflowY="auto" m={4}>
+          {selectedRecipe && (
+            <Card bg={cardBg} shadow="xl" borderRadius="2xl" overflow="hidden">
+              <CardHeader>
+                <Flex justify="space-between" align="center">
+                  <Heading fontSize={{ base: "lg", md: "xl" }} color={headingColor}>
+                    {selectedRecipe.recipeName}
+                  </Heading>
+                  <IconButton
+                    aria-label="Close"
+                    icon={<Icon as={FaTimes} />}
+                    variant="ghost"
+                    onClick={() => {
+                      setIsViewModalOpen(false);
+                      setSelectedRecipe(null);
+                    }}
+                    size="sm"
                   />
-                )}
+                </Flex>
+              </CardHeader>
+              <CardBody>
+                <VStack spacing={{ base: 4, md: 6 }} align="stretch">
+                  {selectedRecipe.image && (
+                    <Image
+                      src={selectedRecipe.image}
+                      alt={selectedRecipe.recipeName}
+                      borderRadius="lg"
+                      maxH={{ base: "200px", md: "300px" }}
+                      objectFit="cover"
+                      w="full"
+                    />
+                  )}
 
-                <Text color={secondaryTextColor} fontSize="lg">
-                  {selectedRecipe.description}
-                </Text>
+                  <Text color={secondaryTextColor} fontSize={{ base: "md", md: "lg" }}>
+                    {selectedRecipe.description}
+                  </Text>
 
-                <HStack spacing={4} wrap="wrap">
-                  {selectedRecipe.category && (
-                    <Badge colorScheme="blue" variant="subtle" px={3} py={1}>
-                      {selectedRecipe.category}
-                    </Badge>
-                  )}
-                  <Badge colorScheme={getDifficultyColor(selectedRecipe.difficulty)} variant="subtle" px={3} py={1}>
-                    {selectedRecipe.difficulty}
-                  </Badge>
-                  {selectedRecipe.cuisine && (
-                    <Badge colorScheme="purple" variant="subtle" px={3} py={1}>
-                      {selectedRecipe.cuisine}
-                    </Badge>
-                  )}
-                </HStack>
-
-                <HStack spacing={6} fontSize="sm" color={secondaryTextColor}>
-                  {selectedRecipe.prepTime && (
-                    <HStack spacing={2}>
-                      <Icon as={FaClock} />
-                      <Text>Prep: {formatTime(selectedRecipe.prepTime)}</Text>
-                    </HStack>
-                  )}
-                  {selectedRecipe.cookTime && (
-                    <HStack spacing={2}>
-                      <Icon as={FaClock} />
-                      <Text>Cook: {formatTime(selectedRecipe.cookTime)}</Text>
-                    </HStack>
-                  )}
-                  <HStack spacing={2}>
-                    <Icon as={FaUsers} />
-                    <Text>Serves: {selectedRecipe.servings}</Text>
+                  <HStack spacing={2} wrap="wrap">
+                    {selectedRecipe.category && (
+                      <Badge colorScheme="blue" variant="subtle" px={2} py={1} fontSize="xs">
+                        {selectedRecipe.category}
+                      </Badge>
+                    )}
+                    {selectedRecipe.difficulty && (
+                      <Badge colorScheme={getDifficultyColor(selectedRecipe.difficulty)} variant="subtle" px={2} py={1} fontSize="xs">
+                        {selectedRecipe.difficulty}
+                      </Badge>
+                    )}
+                    {selectedRecipe.cuisine && (
+                      <Badge colorScheme="purple" variant="subtle" px={2} py={1} fontSize="xs">
+                        {selectedRecipe.cuisine}
+                      </Badge>
+                    )}
                   </HStack>
-                </HStack>
 
-                <Divider />
-
-                <Box>
-                  <Heading size="md" color={headingColor} mb={4}>Ingredients</Heading>
-                  <VStack spacing={2} align="stretch">
-                    {selectedRecipe.ingredients.map((ingredient, index) => (
-                      <HStack key={index} spacing={3}>
-                        <Text fontWeight="bold" color={headingColor} minW="20px">
-                          {index + 1}.
-                        </Text>
-                        <Text color={secondaryTextColor}>{ingredient}</Text>
+                  <HStack spacing={{ base: 4, md: 6 }} fontSize={{ base: "xs", md: "sm" }} color={secondaryTextColor} wrap="wrap">
+                    {selectedRecipe.prepTime && (
+                      <HStack spacing={1}>
+                        <Icon as={FaClock} />
+                        <Text>Prep: {formatTime(selectedRecipe.prepTime)}</Text>
                       </HStack>
-                    ))}
-                  </VStack>
-                </Box>
-
-                <Divider />
-
-                <Box>
-                  <Heading size="md" color={headingColor} mb={4}>Instructions</Heading>
-                  <VStack spacing={4} align="stretch">
-                    {selectedRecipe.instructions.map((instruction, index) => (
-                      <HStack key={index} spacing={4} align="start">
-                        <Text fontWeight="bold" color={headingColor} minW="20px" mt={1}>
-                          {index + 1}.
-                        </Text>
-                        <Text color={secondaryTextColor} lineHeight="tall">
-                          {instruction}
-                        </Text>
+                    )}
+                    {selectedRecipe.cookTime && (
+                      <HStack spacing={1}>
+                        <Icon as={FaClock} />
+                        <Text>Cook: {formatTime(selectedRecipe.cookTime)}</Text>
                       </HStack>
-                    ))}
-                  </VStack>
-                </Box>
+                    )}
+                    <HStack spacing={1}>
+                      <Icon as={FaUsers} />
+                      <Text>Serves: {selectedRecipe.servings}</Text>
+                    </HStack>
+                  </HStack>
 
-                {selectedRecipe.tags.length > 0 && (
-                  <>
-                    <Divider />
-                    <Box>
-                      <Heading size="md" color={headingColor} mb={4}>Tags</Heading>
-                      <HStack spacing={2} wrap="wrap">
-                        {selectedRecipe.tags.map((tag, index) => (
-                          <Badge key={index} colorScheme="green" variant="subtle" px={3} py={1}>
-                            {tag}
-                          </Badge>
-                        ))}
-                      </HStack>
-                    </Box>
-                  </>
-                )}
-              </VStack>
-            )}
-          </ModalBody>
+                  <Divider />
+
+                  <Box>
+                    <Heading size={{ base: "sm", md: "md" }} color={headingColor} mb={3}>Ingredients</Heading>
+                    <VStack spacing={2} align="stretch">
+                      {selectedRecipe.ingredients.map((ingredient, index) => (
+                        <HStack key={index} spacing={3} align="start">
+                          <Text fontWeight="bold" color={headingColor} minW="20px" fontSize={{ base: "sm", md: "md" }}>
+                            {index + 1}.
+                          </Text>
+                          <Text color={secondaryTextColor} fontSize={{ base: "sm", md: "md" }}>{ingredient}</Text>
+                        </HStack>
+                      ))}
+                    </VStack>
+                  </Box>
+
+                  <Divider />
+
+                  <Box>
+                    <Heading size={{ base: "sm", md: "md" }} color={headingColor} mb={3}>Instructions</Heading>
+                    <VStack spacing={{ base: 3, md: 4 }} align="stretch">
+                      {selectedRecipe.instructions.map((instruction, index) => (
+                        <HStack key={index} spacing={3} align="start">
+                          <Text fontWeight="bold" color={headingColor} minW="20px" mt={1} fontSize={{ base: "sm", md: "md" }}>
+                            {index + 1}.
+                          </Text>
+                          <Text color={secondaryTextColor} lineHeight="tall" fontSize={{ base: "sm", md: "md" }}>
+                            {instruction}
+                          </Text>
+                        </HStack>
+                      ))}
+                    </VStack>
+                  </Box>
+
+                  {selectedRecipe.tags && selectedRecipe.tags.length > 0 && (
+                    <>
+                      <Divider />
+                      <Box>
+                        <Heading size={{ base: "sm", md: "md" }} color={headingColor} mb={3}>Tags</Heading>
+                        <HStack spacing={2} wrap="wrap">
+                          {selectedRecipe.tags.map((tag, index) => (
+                            <Badge key={index} colorScheme="green" variant="subtle" px={2} py={1} fontSize="xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </HStack>
+                      </Box>
+                    </>
+                  )}
+                </VStack>
+              </CardBody>
+            </Card>
+          )}
         </ModalContent>
       </Modal>
 
