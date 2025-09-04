@@ -61,11 +61,11 @@ const HowItWorksSection: React.FC = () => {
   ];
 
   return (
-    <Box py={20} bg={bgColor}>
-      <Container maxW="container.xl">
-        <VStack spacing={16}>
+    <Box py={{ base: 12, md: 16, lg: 20 }} bg={bgColor}>
+      <Container maxW="container.xl" px={{ base: 4, md: 6, lg: 8 }}>
+        <VStack spacing={{ base: 12, md: 16 }}>
           {/* Section Header */}
-          <VStack spacing={4} textAlign="center" maxW="3xl">
+          <VStack spacing={{ base: 3, md: 4 }} textAlign="center" maxW="3xl" px={{ base: 4, md: 0 }}>
             <Badge
               colorScheme="purple"
               variant="subtle"
@@ -80,14 +80,14 @@ const HowItWorksSection: React.FC = () => {
             </Badge>
             <Heading
               as="h2"
-              size={{ base: "xl", md: "2xl", lg: "3xl" }}
+              size={{ base: "lg", sm: "xl", md: "2xl", lg: "3xl" }}
               fontWeight="bold"
               color={headingColor}
             >
               From Ingredients to Masterpiece in 4 Simple Steps
             </Heading>
             <Text
-              fontSize={{ base: "md", md: "lg" }}
+              fontSize={{ base: "sm", sm: "md", md: "lg" }}
               color={secondaryTextColor}
               lineHeight="tall"
             >
@@ -97,7 +97,7 @@ const HowItWorksSection: React.FC = () => {
           </VStack>
 
           {/* Steps Grid */}
-          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={8} w="full">
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={{ base: 6, md: 8 }} w="full">
             {steps.map((step, index) => (
               <Card
                 key={index}
@@ -120,14 +120,14 @@ const HowItWorksSection: React.FC = () => {
                   h="4px"
                   bgGradient={`linear(to-r, ${step.color}.400, ${step.color}.600)`}
                 />
-                <CardBody p={8}>
-                  <Flex direction={{ base: "column", md: "row" }} gap={6} align="start">
+                <CardBody p={{ base: 6, md: 8 }}>
+                  <Flex direction={{ base: "column", md: "row" }} gap={{ base: 4, md: 6 }} align="start">
                     {/* Step Number & Icon */}
-                    <VStack spacing={4} align="center" minW="120px">
+                    <VStack spacing={4} align="center" minW={{ base: "100px", md: "120px" }}>
                       <Box
                         position="relative"
-                        w="80px"
-                        h="80px"
+                        w={{ base: "60px", md: "80px" }}
+                        h={{ base: "60px", md: "80px" }}
                         borderRadius="full"
                         bgGradient={`linear(to-br, ${step.color}.100, ${step.color}.200)`}
                         display="flex"
@@ -151,16 +151,16 @@ const HowItWorksSection: React.FC = () => {
                         >
                           {step.step}
                         </Text>
-                        <Icon as={step.icon} w={8} h={8} color={`${step.color}.600`} />
+                        <Icon as={step.icon} w={{ base: 6, md: 8 }} h={{ base: 6, md: 8 }} color={`${step.color}.600`} />
                       </Box>
                     </VStack>
 
                     {/* Content */}
-                    <VStack spacing={4} align="start" flex={1}>
-                      <Heading size="lg" color={headingColor}>
+                    <VStack spacing={{ base: 3, md: 4 }} align="start" flex={1}>
+                      <Heading size={{ base: "md", md: "lg" }} color={headingColor}>
                         {step.title}
                       </Heading>
-                      <Text color={secondaryTextColor} lineHeight="tall">
+                      <Text color={secondaryTextColor} lineHeight="tall" fontSize={{ base: "sm", md: "md" }}>
                         {step.description}
                       </Text>
                     </VStack>
@@ -171,11 +171,11 @@ const HowItWorksSection: React.FC = () => {
           </SimpleGrid>
 
           {/* Process Flow */}
-          <Box w="full" maxW="4xl" mx="auto">
-            <VStack spacing={8}>
+          <Box w="full" maxW="4xl" mx="auto" px={{ base: 4, md: 0 }}>
+            <VStack spacing={{ base: 6, md: 8 }}>
               <Heading
                 as="h3"
-                size={{ base: "lg", md: "xl" }}
+                size={{ base: "md", sm: "lg", md: "xl" }}
                 fontWeight="bold"
                 color={headingColor}
                 textAlign="center"
@@ -190,10 +190,10 @@ const HowItWorksSection: React.FC = () => {
               >
                 {steps.map((step, index) => (
                   <React.Fragment key={index}>
-                    <VStack spacing={2} minW="120px">
+                    <VStack spacing={2} minW={{ base: "100px", md: "120px" }}>
                       <Box
-                        w="60px"
-                        h="60px"
+                        w={{ base: "50px", md: "60px" }}
+                        h={{ base: "50px", md: "60px" }}
                         borderRadius="full"
                         bgGradient={`linear(to-br, ${step.color}.100, ${step.color}.200)`}
                         display="flex"
@@ -202,9 +202,9 @@ const HowItWorksSection: React.FC = () => {
                         border="3px solid"
                         borderColor={`${step.color}.300`}
                       >
-                        <Icon as={step.icon} w={6} h={6} color={`${step.color}.600`} />
+                        <Icon as={step.icon} w={{ base: 5, md: 6 }} h={{ base: 5, md: 6 }} color={`${step.color}.600`} />
                       </Box>
-                      <Text fontSize="xs" color={secondaryTextColor} textAlign="center" fontWeight="medium">
+                      <Text fontSize={{ base: "2xs", md: "xs" }} color={secondaryTextColor} textAlign="center" fontWeight="medium">
                         {step.title}
                       </Text>
                     </VStack>
@@ -212,8 +212,8 @@ const HowItWorksSection: React.FC = () => {
                       <Icon 
                         as={FaArrowRight} 
                         color={secondaryTextColor} 
-                        w={4} 
-                        h={4}
+                        w={{ base: 3, md: 4 }} 
+                        h={{ base: 3, md: 4 }}
                         display={{ base: "none", md: "block" }}
                       />
                     )}

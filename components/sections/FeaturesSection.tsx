@@ -80,11 +80,11 @@ const FeaturesSection: React.FC = () => {
   ];
 
   return (
-    <Box py={20} bg={featureBg}>
-      <Container maxW="container.xl">
-        <VStack spacing={16}>
+    <Box py={{ base: 12, md: 16, lg: 20 }} bg={featureBg}>
+      <Container maxW="container.xl" px={{ base: 4, md: 6, lg: 8 }}>
+        <VStack spacing={{ base: 12, md: 16 }}>
           {/* Section Header */}
-          <VStack spacing={4} textAlign="center" maxW="3xl">
+          <VStack spacing={{ base: 3, md: 4 }} textAlign="center" maxW="3xl" px={{ base: 4, md: 0 }}>
             <Badge
               colorScheme="blue"
               variant="subtle"
@@ -99,14 +99,14 @@ const FeaturesSection: React.FC = () => {
             </Badge>
             <Heading
               as="h2"
-              size={{ base: "xl", md: "2xl", lg: "3xl" }}
+              size={{ base: "lg", sm: "xl", md: "2xl", lg: "3xl" }}
               fontWeight="bold"
               color={headingColor}
             >
               Four Powerful Features That Transform Your Cooking
             </Heading>
             <Text
-              fontSize={{ base: "md", md: "lg" }}
+              fontSize={{ base: "sm", sm: "md", md: "lg" }}
               color={secondaryTextColor}
               lineHeight="tall"
             >
@@ -116,7 +116,7 @@ const FeaturesSection: React.FC = () => {
           </VStack>
 
           {/* Features Grid */}
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={8} w="full">
+          <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={{ base: 6, md: 8 }} w="full">
             {features.map((feature, index) => (
               <Card
                 key={index}
@@ -139,27 +139,27 @@ const FeaturesSection: React.FC = () => {
                   h="4px"
                   bgGradient={`linear(to-r, ${feature.color}.400, ${feature.color}.600)`}
                 />
-                <CardBody p={8}>
-                  <VStack spacing={6} align="center" textAlign="center">
+                <CardBody p={{ base: 6, md: 8 }}>
+                  <VStack spacing={{ base: 4, md: 6 }} align="center" textAlign="center">
                     <Box
-                      p={4}
+                      p={{ base: 3, md: 4 }}
                       borderRadius="full"
                       bgGradient={`linear(to-br, ${feature.color}.100, ${feature.color}.200)`}
                       color={`${feature.color}.600`}
                     >
-                      <Icon as={feature.icon} w={8} h={8} />
+                      <Icon as={feature.icon} w={{ base: 6, md: 8 }} h={{ base: 6, md: 8 }} />
                     </Box>
-                    <VStack spacing={3}>
-                      <Heading size="lg" color={headingColor}>
+                    <VStack spacing={{ base: 2, md: 3 }}>
+                      <Heading size={{ base: "md", md: "lg" }} color={headingColor}>
                         {feature.title}
                       </Heading>
-                      <Text color={secondaryTextColor} lineHeight="tall">
+                      <Text color={secondaryTextColor} lineHeight="tall" fontSize={{ base: "sm", md: "md" }}>
                         {feature.description}
                       </Text>
                     </VStack>
                     <List spacing={2} w="full">
                       {feature.benefits.map((benefit, benefitIndex) => (
-                        <ListItem key={benefitIndex} fontSize="sm" color={secondaryTextColor}>
+                        <ListItem key={benefitIndex} fontSize={{ base: "xs", md: "sm" }} color={secondaryTextColor}>
                           <ListIcon as={FaCheck} color={`${feature.color}.500`} />
                           {benefit}
                         </ListItem>

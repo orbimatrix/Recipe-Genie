@@ -89,11 +89,11 @@ const StatsSection: React.FC = () => {
   ];
 
   return (
-    <Box py={20} bg={bgColor}>
-      <Container maxW="container.xl">
-        <VStack spacing={16}>
+    <Box py={{ base: 12, md: 16, lg: 20 }} bg={bgColor}>
+      <Container maxW="container.xl" px={{ base: 4, md: 6, lg: 8 }}>
+        <VStack spacing={{ base: 12, md: 16 }}>
           {/* Section Header */}
-          <VStack spacing={4} textAlign="center" maxW="3xl">
+          <VStack spacing={{ base: 3, md: 4 }} textAlign="center" maxW="3xl" px={{ base: 4, md: 0 }}>
             <Badge
               colorScheme="green"
               variant="subtle"
@@ -108,14 +108,14 @@ const StatsSection: React.FC = () => {
             </Badge>
             <Heading
               as="h2"
-              size={{ base: "xl", md: "2xl", lg: "3xl" }}
+              size={{ base: "lg", sm: "xl", md: "2xl", lg: "3xl" }}
               fontWeight="bold"
               color={headingColor}
             >
               Trusted by Thousands of Cooks Worldwide
             </Heading>
             <Text
-              fontSize={{ base: "md", md: "lg" }}
+              fontSize={{ base: "sm", sm: "md", md: "lg" }}
               color={secondaryTextColor}
               lineHeight="tall"
             >
@@ -125,12 +125,12 @@ const StatsSection: React.FC = () => {
           </VStack>
 
           {/* Stats Grid */}
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={8} w="full">
+          <SimpleGrid columns={{ base: 1, sm: 2, lg: 4 }} spacing={{ base: 6, md: 8 }} w="full">
             {stats.map((stat, index) => (
               <Box
                 key={index}
                 bg={cardBg}
-                p={8}
+                p={{ base: 6, md: 8 }}
                 borderRadius="2xl"
                 shadow="xl"
                 textAlign="center"
@@ -140,28 +140,28 @@ const StatsSection: React.FC = () => {
                   boxShadow: "2xl",
                 }}
               >
-                <VStack spacing={4}>
+                <VStack spacing={{ base: 3, md: 4 }}>
                   <Box
-                    p={4}
+                    p={{ base: 3, md: 4 }}
                     borderRadius="full"
                     bgGradient={`linear(to-br, ${accentColor.replace('.500', '.100')}, ${accentColor.replace('.500', '.200')})`}
                     color={accentColor}
                   >
-                    <Icon as={stat.icon} w={8} h={8} />
+                    <Icon as={stat.icon} w={{ base: 6, md: 8 }} h={{ base: 6, md: 8 }} />
                   </Box>
                   <Stat>
-                    <StatNumber fontSize="3xl" color={headingColor}>
+                    <StatNumber fontSize={{ base: "2xl", md: "3xl" }} color={headingColor}>
                       {stat.value}
                     </StatNumber>
-                    <StatLabel color={secondaryTextColor} fontSize="sm">
+                    <StatLabel color={secondaryTextColor} fontSize={{ base: "xs", md: "sm" }}>
                       {stat.label}
                     </StatLabel>
-                    <StatHelpText>
+                    <StatHelpText fontSize={{ base: "xs", md: "sm" }}>
                       <StatArrow type={stat.changeType} />
                       {stat.change}
                     </StatHelpText>
                   </Stat>
-                  <Text fontSize="xs" color={secondaryTextColor} textAlign="center">
+                  <Text fontSize={{ base: "2xs", md: "xs" }} color={secondaryTextColor} textAlign="center">
                     {stat.description}
                   </Text>
                 </VStack>
@@ -170,22 +170,22 @@ const StatsSection: React.FC = () => {
           </SimpleGrid>
 
           {/* Achievements */}
-          <VStack spacing={8} w="full">
+          <VStack spacing={{ base: 6, md: 8 }} w="full">
             <Heading
               as="h3"
-              size={{ base: "lg", md: "xl" }}
+              size={{ base: "md", sm: "lg", md: "xl" }}
               fontWeight="bold"
               color={headingColor}
               textAlign="center"
             >
               Awards & Recognition
             </Heading>
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6} w="full">
+            <SimpleGrid columns={{ base: 1, sm: 2, md: 3 }} spacing={{ base: 4, md: 6 }} w="full">
               {achievements.map((achievement, index) => (
                 <Box
                   key={index}
                   bg={cardBg}
-                  p={6}
+                  p={{ base: 4, md: 6 }}
                   borderRadius="xl"
                   shadow="lg"
                   textAlign="center"
@@ -198,18 +198,18 @@ const StatsSection: React.FC = () => {
                     borderColor: `${achievement.color}.300`,
                   }}
                 >
-                  <VStack spacing={4}>
+                  <VStack spacing={{ base: 3, md: 4 }}>
                     <Icon 
                       as={achievement.icon} 
-                      w={12} 
-                      h={12} 
+                      w={{ base: 8, md: 12 }} 
+                      h={{ base: 8, md: 12 }} 
                       color={`${achievement.color}.500`}
                     />
                     <VStack spacing={2}>
-                      <Text fontWeight="bold" color={headingColor} fontSize="lg">
+                      <Text fontWeight="bold" color={headingColor} fontSize={{ base: "sm", md: "lg" }}>
                         {achievement.title}
                       </Text>
-                      <Text fontSize="sm" color={secondaryTextColor}>
+                      <Text fontSize={{ base: "xs", md: "sm" }} color={secondaryTextColor}>
                         {achievement.description}
                       </Text>
                     </VStack>

@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import theme from './theme';
 import Navigation from './components/Navigation';
 import HomePage from './pages/HomePage';
+import RecipeGeneratorPage from './pages/RecipeGeneratorPage';
 import AboutPage from './pages/AboutPage';
 import CareersPage from './pages/CareersPage';
 import BlogPage from './pages/BlogPage';
@@ -26,6 +27,7 @@ const App: React.FC = () => {
         <Navigation />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/generate" element={<RecipeGeneratorPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/careers" element={<CareersPage />} />
           <Route path="/blog" element={<BlogPage />} />
