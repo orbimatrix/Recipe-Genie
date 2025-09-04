@@ -13,13 +13,17 @@ import {
 import {
   FaArrowRight,
   FaDownload,
+  FaPlus,
+  FaBrain,
 } from 'react-icons/fa';
 
 interface CTASectionProps {
   onStartCooking: () => void;
+  onAddRecipe: () => void;
+  onGenerateRecipe: () => void;
 }
 
-const CTASection: React.FC<CTASectionProps> = ({ onStartCooking }) => {
+const CTASection: React.FC<CTASectionProps> = ({ onStartCooking, onAddRecipe, onGenerateRecipe }) => {
   return (
     <Box py={20} bgGradient="linear(to-br, green.500, blue.600)" position="relative" overflow="hidden">
       {/* Background Pattern */}
@@ -42,7 +46,7 @@ const CTASection: React.FC<CTASectionProps> = ({ onStartCooking }) => {
               fontWeight="bold"
               color="white"
             >
-              Ready to Transform Your Cooking Experience?
+              Ready to Build Your Recipe Collection?
             </Heading>
             <Text
               fontSize={{ base: "lg", md: "xl" }}
@@ -50,8 +54,8 @@ const CTASection: React.FC<CTASectionProps> = ({ onStartCooking }) => {
               lineHeight="tall"
               maxW="2xl"
             >
-              Join thousands of home cooks, professional chefs, and food enthusiasts 
-              who have discovered the joy of AI-powered cooking with Recipe Genie.
+              Start organizing your favorite recipes, upload family traditions, and discover 
+              new dishes with AI-powered suggestions. Your personal recipe management platform awaits.
             </Text>
           </VStack>
 
@@ -79,9 +83,54 @@ const CTASection: React.FC<CTASectionProps> = ({ onStartCooking }) => {
               }}
               transition="all 0.3s ease"
             >
-              Start Cooking Now
+              View My Recipes
             </Button>
-           
+            <Button
+              size="xl"
+              bg="whiteAlpha.200"
+              color="white"
+              leftIcon={<Icon as={FaPlus} />}
+              onClick={onAddRecipe}
+              px={12}
+              py={8}
+              fontSize="xl"
+              fontWeight="bold"
+              borderRadius="2xl"
+              boxShadow="2xl"
+              border="2px solid"
+              borderColor="whiteAlpha.300"
+              _hover={{
+                transform: "translateY(-4px)",
+                boxShadow: "3xl",
+                bg: "whiteAlpha.300",
+              }}
+              transition="all 0.3s ease"
+            >
+              Add Recipe
+            </Button>
+            <Button
+              size="xl"
+              bg="whiteAlpha.200"
+              color="white"
+              leftIcon={<Icon as={FaBrain} />}
+              onClick={onGenerateRecipe}
+              px={12}
+              py={8}
+              fontSize="xl"
+              fontWeight="bold"
+              borderRadius="2xl"
+              boxShadow="2xl"
+              border="2px solid"
+              borderColor="whiteAlpha.300"
+              _hover={{
+                transform: "translateY(-4px)",
+                boxShadow: "3xl",
+                bg: "whiteAlpha.300",
+              }}
+              transition="all 0.3s ease"
+            >
+              AI Generate
+            </Button>
           </Stack>
 
           {/* Trust Indicators */}

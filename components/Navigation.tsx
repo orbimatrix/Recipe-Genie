@@ -25,7 +25,7 @@ import {
   DrawerContent,
   DrawerCloseButton,
 } from '@chakra-ui/react';
-import { FaUtensils, FaBars, FaTimes, FaHome, FaInfoCircle, FaShieldAlt, FaGavel, FaSun, FaMoon, FaMagic } from 'react-icons/fa';
+import { FaUtensils, FaBars, FaTimes, FaHome, FaInfoCircle, FaShieldAlt, FaGavel, FaSun, FaMoon, FaMagic, FaBook, FaPlus } from 'react-icons/fa';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 
 const Navigation: React.FC = () => {
@@ -37,7 +37,9 @@ const Navigation: React.FC = () => {
 
   const navItems = [
     { name: 'Home', path: '/', icon: FaHome },
-    { name: 'Generate Recipe', path: '/generate', icon: FaMagic },
+    { name: 'My Recipes', path: '/recipes', icon: FaBook },
+    { name: 'Add Recipe', path: '/add-recipe', icon: FaPlus },
+    { name: 'AI Generate', path: '/generate', icon: FaMagic },
     { name: 'About', path: '/about', icon: FaInfoCircle },
     { name: 'Privacy', path: '/privacy', icon: FaShieldAlt },
     { name: 'Terms', path: '/terms', icon: FaGavel },

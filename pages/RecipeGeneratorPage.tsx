@@ -114,6 +114,7 @@ const RecipeGeneratorPage: React.FC = () => {
   };
 
   const formatTime = (time: string) => {
+    if (!time) return 'N/A';
     return time.replace(/\D/g, '') + ' min';
   };
 

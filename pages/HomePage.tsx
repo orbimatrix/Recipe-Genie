@@ -18,18 +18,26 @@ const HomePage: React.FC = () => {
   const bgColor = useColorModeValue('gray.50', 'gray.900');
 
   const handleStartCooking = () => {
+    navigate('/recipes');
+  };
+
+  const handleAddRecipe = () => {
+    navigate('/add-recipe');
+  };
+
+  const handleGenerateRecipe = () => {
     navigate('/generate');
   };
 
   return (
     <Box minH="100vh" bg={bgColor}>
-      <HeroSection onStartCooking={handleStartCooking} />
+      <HeroSection onStartCooking={handleStartCooking} onAddRecipe={handleAddRecipe} onGenerateRecipe={handleGenerateRecipe} />
       <FeaturesSection />
       <HowItWorksSection />
       <StatsSection />
       <TestimonialsSection />
       <PricingSection />
-      <CTASection onStartCooking={handleStartCooking} />
+      <CTASection onStartCooking={handleStartCooking} onAddRecipe={handleAddRecipe} onGenerateRecipe={handleGenerateRecipe} />
       <Footer />
     </Box>
   );

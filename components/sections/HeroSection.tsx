@@ -20,13 +20,16 @@ import {
   FaPlay,
   FaUtensils,
   FaGlobe,
+  FaPlus,
 } from 'react-icons/fa';
 
 interface HeroSectionProps {
   onStartCooking: () => void;
+  onAddRecipe: () => void;
+  onGenerateRecipe: () => void;
 }
 
-const HeroSection: React.FC<HeroSectionProps> = ({ onStartCooking }) => {
+const HeroSection: React.FC<HeroSectionProps> = ({ onStartCooking, onAddRecipe, onGenerateRecipe }) => {
   const heroBg = useColorModeValue('linear(to-br, green.50, blue.50)', 'linear(to-br, gray.800, gray.900)');
   const headingColor = useColorModeValue('gray.800', 'white');
   const secondaryTextColor = useColorModeValue('gray.600', 'gray.300');
@@ -75,13 +78,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartCooking }) => {
                 lineHeight={{ base: "shorter", md: "shorter" }}
                 color={headingColor}
               >
-                Transform Your Kitchen with{' '}
+                Organize, Create & Discover{' '}
                 <Text
                   as="span"
                   bgGradient="linear(to-r, green.400, blue.500)"
                   bgClip="text"
                 >
-                  AI-Powered Recipes
+                  Amazing Recipes
                 </Text>
               </Heading>
               
@@ -92,8 +95,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartCooking }) => {
                 lineHeight="tall"
                 px={{ base: 4, md: 0 }}
               >
-                Discover authentic recipes from around the world, guided by step-by-step video tutorials, 
-                and personalized meal planning powered by artificial intelligence. Perfect for home cooks, 
+                Build your personal recipe collection, upload family favorites, and discover new dishes 
+                with AI-powered suggestions. The ultimate recipe management platform for home cooks, 
                 professional chefs, and food enthusiasts.
               </Text>
             </VStack>
@@ -124,13 +127,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartCooking }) => {
                 }}
                 transition="all 0.3s ease"
               >
-                Start Cooking Now
+                View My Recipes
               </Button>
               <Button
                 size={{ base: "md", md: "lg" }}
                 variant="outline"
                 colorScheme="green"
-                leftIcon={<Icon as={FaPlay} />}
+                leftIcon={<Icon as={FaPlus} />}
+                onClick={onAddRecipe}
                 px={{ base: 6, md: 8 }}
                 py={{ base: 4, md: 6 }}
                 fontSize={{ base: "md", md: "lg" }}
@@ -143,7 +147,27 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartCooking }) => {
                 }}
                 transition="all 0.3s ease"
               >
-                Watch Demo
+                Add Recipe
+              </Button>
+              <Button
+                size={{ base: "md", md: "lg" }}
+                variant="outline"
+                colorScheme="blue"
+                leftIcon={<Icon as={FaBrain} />}
+                onClick={onGenerateRecipe}
+                px={{ base: 6, md: 8 }}
+                py={{ base: 4, md: 6 }}
+                fontSize={{ base: "md", md: "lg" }}
+                fontWeight="semibold"
+                borderRadius="xl"
+                w={{ base: "full", sm: "auto" }}
+                _hover={{
+                  transform: "translateY(-2px)",
+                  boxShadow: "xl",
+                }}
+                transition="all 0.3s ease"
+              >
+                AI Generate
               </Button>
             </Stack>
 

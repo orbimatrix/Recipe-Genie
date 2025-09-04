@@ -19,6 +19,9 @@ import {
   FaBrain,
   FaGlobe,
   FaCheck,
+  FaBook,
+  FaEdit,
+  FaShare,
 } from 'react-icons/fa';
 import {
   MdVideoLibrary,
@@ -34,47 +37,47 @@ const FeaturesSection: React.FC = () => {
 
   const features = [
     {
-      icon: FaBrain,
-      title: "AI-Powered Recommendations",
-      description: "Get personalized recipe suggestions based on your preferences, dietary restrictions, and available ingredients using advanced AI.",
+      icon: FaBook,
+      title: "Personal Recipe Collection",
+      description: "Upload, organize, and manage your personal recipe collection with photos, detailed instructions, and custom tags.",
       color: "green",
+      benefits: [
+        "Upload family recipes",
+        "Organize by categories",
+        "Search and filter easily"
+      ]
+    },
+    {
+      icon: FaBrain,
+      title: "AI-Powered Recipe Generation",
+      description: "Generate new recipes based on your available ingredients and preferences using advanced AI technology.",
+      color: "blue",
       benefits: [
         "Smart ingredient matching",
         "Dietary preference learning",
-        "Nutritional optimization"
+        "Creative recipe suggestions"
       ]
     },
     {
-      icon: FaGlobe,
-      title: "Cultural Recipe Authenticity",
-      description: "Explore authentic recipes from 50+ countries, verified by local chefs and cultural experts to ensure traditional accuracy.",
-      color: "blue",
-      benefits: [
-        "Local chef verification",
-        "Traditional techniques",
-        "Cultural context stories"
-      ]
-    },
-    {
-      icon: MdVideoLibrary,
-      title: "Step-by-Step Video Tutorials",
-      description: "Master every technique with professional video tutorials that guide you through each step of the cooking process.",
+      icon: FaEdit,
+      title: "Easy Recipe Management",
+      description: "Edit, update, and customize your recipes with our intuitive interface. Add notes, modify ingredients, and track changes.",
       color: "purple",
       benefits: [
-        "Professional chef demonstrations",
-        "Multiple camera angles",
-        "Slow-motion techniques"
+        "Quick editing tools",
+        "Version history",
+        "Custom modifications"
       ]
     },
     {
-      icon: MdSchedule,
-      title: "Personalized Meal Planning",
-      description: "Create weekly meal plans tailored to your schedule, budget, and nutritional goals with smart shopping lists.",
+      icon: FaShare,
+      title: "Share & Collaborate",
+      description: "Share your favorite recipes with friends and family, or keep them private in your personal collection.",
       color: "orange",
       benefits: [
-        "Smart scheduling",
-        "Budget optimization",
-        "Shopping list generation"
+        "Easy sharing options",
+        "Privacy controls",
+        "Family collaboration"
       ]
     }
   ];
@@ -103,15 +106,15 @@ const FeaturesSection: React.FC = () => {
               fontWeight="bold"
               color={headingColor}
             >
-              Four Powerful Features That Transform Your Cooking
+              Everything You Need to Manage Your Recipes
             </Heading>
             <Text
               fontSize={{ base: "sm", sm: "md", md: "lg" }}
               color={secondaryTextColor}
               lineHeight="tall"
             >
-              From AI-powered recommendations to authentic cultural recipes, 
-              we provide everything you need to become a master chef.
+              From uploading family recipes to AI-powered generation, 
+              we provide everything you need to build and manage your perfect recipe collection.
             </Text>
           </VStack>
 
