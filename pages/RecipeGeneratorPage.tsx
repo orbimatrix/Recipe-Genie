@@ -309,6 +309,7 @@ const RecipeGeneratorPage: React.FC = () => {
                             colorScheme="blue"
                             variant="outline"
                             size="sm"
+                            isDisabled
                           >
                             Share
                           </Button>
