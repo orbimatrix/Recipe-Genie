@@ -482,27 +482,27 @@ const RecipeCollectionPage: React.FC = () => {
         setSelectedRecipe(null);
       }} size={{ base: "md", sm: "lg", md: "xl", lg: "2xl", xl: "3xl" }}>
         <ModalOverlay />
-        <ModalContent maxH="90vh" overflowY="auto" m={4}>
-          {selectedRecipe && (
-            <Card bg={cardBg} shadow="xl" borderRadius="2xl" overflow="hidden">
-              <CardHeader>
-                <Flex justify="space-between" align="center">
-                  <Heading fontSize={{ base: "lg", md: "xl" }} color={headingColor}>
-                    {selectedRecipe.recipeName}
-                  </Heading>
-                  <IconButton
-                    aria-label="Close"
-                    icon={<Icon as={FaTimes} />}
-                    variant="ghost"
-                    onClick={() => {
-                      setIsViewModalOpen(false);
-                      setSelectedRecipe(null);
-                    }}
-                    size="sm"
-                  />
-                </Flex>
-              </CardHeader>
-              <CardBody>
+        <ModalContent maxH="90vh" m={4}>
+          <ModalHeader>
+            <Flex justify="space-between" align="center">
+              <Heading fontSize={{ base: "lg", md: "xl" }} color={headingColor}>
+                {selectedRecipe?.recipeName}
+              </Heading>
+              <IconButton
+                aria-label="Close"
+                icon={<Icon as={FaTimes} />}
+                variant="ghost"
+                onClick={() => {
+                  setIsViewModalOpen(false);
+                  setSelectedRecipe(null);
+                }}
+                size="sm"
+              />
+            </Flex>
+          </ModalHeader>
+          <ModalBody overflowY="auto" p={0}>
+            {selectedRecipe && (
+              <Box p={6}>
                 <VStack spacing={{ base: 4, md: 6 }} align="stretch">
                   {selectedRecipe.image && (
                     <Image
@@ -606,9 +606,9 @@ const RecipeCollectionPage: React.FC = () => {
                     </>
                   )}
                 </VStack>
-              </CardBody>
-            </Card>
-          )}
+              </Box>
+            )}
+          </ModalBody>
         </ModalContent>
       </Modal>
 
